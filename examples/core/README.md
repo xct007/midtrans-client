@@ -122,7 +122,7 @@ available method and what they do.
 
 > Expire transaction is triggered to update the `transaction_status` to expire, when the customer fails to complete the payment. The expired `order_id` can be reused for the same or different payment methods.
 
-### `Core.refund` -
+### `Core.refund`
 
 **POST** **/v2/{order_id}/refund**
 
@@ -130,7 +130,7 @@ available method and what they do.
 
 > If transaction's status is still `Pending` `Authorize` or `Capture` please use Cancel API instead.
 
-### `Core.directRefund` -
+### `Core.directRefund`
 
 **POST** **/v2/{order_id}/refund/online/direct**
 
@@ -138,43 +138,43 @@ available method and what they do.
 
 > If payment status is still in either Capture, Pending or Authorize, use the Cancel API instead.
 
-### `Core.status` -
+### `Core.status`
 
 **GET** **/v2/{order_id}/status**
 
 > Get Transaction Status is triggered to obtain the transaction_status and other details of a specific transaction.
 
-### `Core.statusB2B` -
+### `Core.statusB2B`
 
 **GET** **/v2/{order_id}/status/b2b**
 
 > Get Transaction Status B2B is triggered to obtain the transaction status for all B2B transactions related to an `order_id`.
 
-### `Core.registerCard` -
+### `Core.registerCard`
 
 **GET** **/v2/card/register**
 
 > Register Card can be triggered to register the card information of the customer for future one click and two click transactions.
 
-### `Core.createGoPayAccount` -
+### `Core.createGoPayAccount`
 
 **POST** **/v2/pay/account**
 
 > Create Pay Account is triggered to link the customer's account to be used for payments using specific payment channel.
 
-### `Core.getGoPayAccount` -
+### `Core.getGoPayAccount`
 
 **GET** **/v2/pay/account/{account_id}**
 
 > Get Pay Account is triggered to get GoPay's account linked status. This method is only applicable for GoPay Tokenizations.
 
-### `Core.unbindGoPayAccount` -
+### `Core.unbindGoPayAccount`
 
 **POST** **/v2/pay/account/{account_id}/unbind**
 
 > Unbind Pay Account is triggered to remove the linked customer account.
 
-### `Core.pointInquiry` -
+### `Core.pointInquiry`
 
 **GET** **/v2/point_inquiry/{token_id}**
 
