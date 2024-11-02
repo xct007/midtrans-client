@@ -1,0 +1,77 @@
+{
+	"name": "@xct007/midtrans-client",
+	"version": "0.0.1",
+	"description": "Unofficial Midtrans Payment API Client Library",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"scripts": {
+		"build": "./scripts/build",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"test": "jest",
+		"test:watch": "jest --watch",
+		"prepublishOnly": "exit 0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/xct007/midtrans-client.git"
+	},
+	"files": [
+		"dist"
+	],
+	"keywords": [
+		"api",
+		"midtrans",
+		"payment"
+	],
+	"author": "FrierenDv",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/xct007/midtrans-client/issues"
+	},
+	"imports": {
+		"@xct007/midtrans-client": ".",
+		"@xct007/midtrans-client/*": "./src/*"
+	},
+	"exports": {
+		".": {
+			"require": {
+				"types": "./dist/index.d.ts",
+				"default": "./dist/index.js"
+			},
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.mjs"
+		},
+		"./*.mjs": {
+			"types": "./dist/*.d.ts",
+			"default": "./dist/*.mjs"
+		},
+		"./*.js": {
+			"types": "./dist/*.d.ts",
+			"default": "./dist/*.js"
+		},
+		"./*": {
+			"types": "./dist/*.d.ts",
+			"require": "./dist/*.js",
+			"default": "./dist/*.mjs"
+		}
+	},
+	"homepage": "https://github.com/xct007/midtrans-client#readme",
+	"devDependencies": {
+		"@babel/preset-typescript": "^7.25.9",
+		"@swc/jest": "^0.2.36",
+		"@trivago/prettier-plugin-sort-imports": "^4.3.0",
+		"@types/jest": "^29.5.14",
+		"@types/node": "^22.7.9",
+		"eslint": "^9.13.0",
+		"globals": "^15.11.0",
+		"jest": "^29.7.0",
+		"prettier": "^3.3.3",
+		"rimraf": "^6.0.1",
+		"ts-jest": "^29.2.5",
+		"ts-node": "^10.9.2",
+		"tsc-multi": "^1.1.0",
+		"typescript": "^5.6.3",
+		"typescript-eslint": "^8.11.0"
+	}
+}
