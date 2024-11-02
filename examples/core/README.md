@@ -37,7 +37,7 @@ midtransClient.Core.charge({
 
 ## `capture`
 
-Reference [Capture Transactions](https://docs.midtrans.com/reference/capture-transaction)
+Reference [Capture Transaction](https://docs.midtrans.com/reference/capture-transaction)
 
 ```js
 midtransClient.Core.capture({
@@ -54,7 +54,7 @@ midtransClient.Core.capture({
 
 ## `cancel`
 
-Reference [Capture Transactions](https://docs.midtrans.com/reference/capture-transaction)
+Reference [Cancel Transaction](https://docs.midtrans.com/reference/cancel-transaction)
 
 ```js
 midtransClient.Core.cancel("trx-id")
@@ -68,7 +68,7 @@ midtransClient.Core.cancel("trx-id")
 
 ## `status`
 
-Reference [Capture Transactions](https://docs.midtrans.com/reference/capture-transaction)
+Reference [Get Transaction Status](https://docs.midtrans.com/reference/get-transaction-status)
 
 ```js
 midtransClient.Core.status("trx-id")
@@ -80,9 +80,9 @@ midtransClient.Core.status("trx-id")
 	});
 ```
 
-## [`Payment API`](https://docs.midtrans.com/reference/overview-17) methods
+## [`Payment API`](https://docs.midtrans.com/reference/overview-17) method overview
 
-available method and what they do.
+---
 
 ### `Core.charge`
 
@@ -90,7 +90,9 @@ available method and what they do.
 
 > Perform a transaction with various available payment methods and features.
 
-**[More information](https://docs.midtrans.com/reference/charge-transactions-1)**
+**[Reference](https://docs.midtrans.com/reference/charge-transactions-1)**
+
+---
 
 ### `Core.capture`
 
@@ -98,11 +100,19 @@ available method and what they do.
 
 > Capture transaction is triggered to capture the transaction balance when `transaction_status`:`authorize`. This is only available after [Pre-Authorized Credit Card](https://docs.midtrans.com/reference/card-feature-pre-authorization) or [Pre-Authorized GoPay](https://docs.midtrans.com/reference/gopay-tokenization#gopay-tokenization-features-pre-auth).
 
+**[Reference](https://docs.midtrans.com/reference/capture-transaction)**
+
+---
+
 ### `Core.approve`
 
 **POST** **/v2/{order_id}/approve**
 
 > Approve transaction is triggered to `accept` the card payment transaction with `fraud_status`:`challenge`.
+
+**[Reference](https://docs.midtrans.com/reference/approve-transaction)**
+
+---
 
 ### `Core.deny`
 
@@ -110,17 +120,29 @@ available method and what they do.
 
 > Deny a transaction with a specific order_id, flagged as challenge by Fraud Detection System.
 
+**[Reference](https://docs.midtrans.com/reference/deny-transaction)**
+
+---
+
 ### `Core.cancel`
 
 **POST** **/v2/{order_id}/cancel**
 
 > Cancel transaction is triggered to void the transaction. If transaction is already settled (status : `settlement`) you should perform refund instead if the payment method supports it.
 
+**[Reference](https://docs.midtrans.com/reference/cancel-transaction)**
+
+---
+
 ### `Core.expire`
 
 **POST** **/v2/{order_id}/expire**
 
 > Expire transaction is triggered to update the `transaction_status` to expire, when the customer fails to complete the payment. The expired `order_id` can be reused for the same or different payment methods.
+
+**[Reference](https://docs.midtrans.com/reference/expire-transaction)**
+
+---
 
 ### `Core.refund`
 
@@ -130,6 +152,10 @@ available method and what they do.
 
 > If transaction's status is still `Pending` `Authorize` or `Capture` please use Cancel API instead.
 
+**[Reference](https://docs.midtrans.com/reference/refund-transaction)**
+
+---
+
 ### `Core.directRefund`
 
 **POST** **/v2/{order_id}/refund/online/direct**
@@ -138,11 +164,19 @@ available method and what they do.
 
 > If payment status is still in either Capture, Pending or Authorize, use the Cancel API instead.
 
+**[Reference](https://docs.midtrans.com/reference/direct-refund-transaction)**
+
+---
+
 ### `Core.status`
 
 **GET** **/v2/{order_id}/status**
 
 > Get Transaction Status is triggered to obtain the transaction_status and other details of a specific transaction.
+
+**[Reference](https://docs.midtrans.com/reference/get-transaction-status)**
+
+---
 
 ### `Core.statusB2B`
 
@@ -150,11 +184,19 @@ available method and what they do.
 
 > Get Transaction Status B2B is triggered to obtain the transaction status for all B2B transactions related to an `order_id`.
 
+**[Reference](https://docs.midtrans.com/reference/get-transaction-status-b2b)**
+
+---
+
 ### `Core.registerCard`
 
 **GET** **/v2/card/register**
 
 > Register Card can be triggered to register the card information of the customer for future one click and two click transactions.
+
+**[Reference](https://docs.midtrans.com/reference/register-card)**
+
+---
 
 ### `Core.createGoPayAccount`
 
@@ -162,11 +204,19 @@ available method and what they do.
 
 > Create Pay Account is triggered to link the customer's account to be used for payments using specific payment channel.
 
+**[Reference](https://docs.midtrans.com/reference/create-pay-account)**
+
+---
+
 ### `Core.getGoPayAccount`
 
 **GET** **/v2/pay/account/{account_id}**
 
 > Get Pay Account is triggered to get GoPay's account linked status. This method is only applicable for GoPay Tokenizations.
+
+**[Reference](https://docs.midtrans.com/reference/get-pay-account)**
+
+---
 
 ### `Core.unbindGoPayAccount`
 
@@ -174,17 +224,27 @@ available method and what they do.
 
 > Unbind Pay Account is triggered to remove the linked customer account.
 
+**[Reference](https://docs.midtrans.com/reference/unbind-pay-account)**
+
+---
+
 ### `Core.pointInquiry`
 
 **GET** **/v2/point_inquiry/{token_id}**
 
 > Point Inquiry is triggered to obtain the balance amount on the card.
 
+**[Reference](https://docs.midtrans.com/reference/point-inquiry)**
+
+---
+
 ### `Core.getBinMetadata`
 
 **GET** **/v1/bins/{bin_number}**
 
 > BIN API is called to get metadata for a particular BIN, such as card type (Credit or Debit), the card network provider (Visa, MasterCard), and so on.
+
+**[Reference](https://docs.midtrans.com/reference/bin-api)**
 
 # Subscription API
 
@@ -243,6 +303,8 @@ More information [here](https://docs.midtrans.com/reference/api-methods-1)
 
 > Create a subscription or recurring transaction by sending all the details required to create a transaction.
 
+**[Reference](https://docs.midtrans.com/reference/create-subscription)**
+
 ---
 
 ### `Core.subscription.get`
@@ -250,6 +312,8 @@ More information [here](https://docs.midtrans.com/reference/api-methods-1)
 **GET** **/v1/subscriptions/{subscription_id}**
 
 > Retrieve the subscription details of a customer using the `subscription_id`.
+
+**[Reference](https://docs.midtrans.com/reference/get-subscription)**
 
 ---
 
@@ -259,11 +323,19 @@ More information [here](https://docs.midtrans.com/reference/api-methods-1)
 
 > Disable a customer's subscription account with a specific `subscription_id` so that the customer is not charged for the subscription in the future.
 
+**[Reference](https://docs.midtrans.com/reference/disable-subscription)**
+
+---
+
 ### `Core.subscription.cancel`
 
 **POST** **/v1/subscriptions/{subscription_id}/cancel**
 
 > Cancel a customer's subscription account with a specific `subscription_id` so that the customer is not charged for the subscription in the future.
+
+**[Reference](https://docs.midtrans.com/reference/cancel-subscription)**
+
+---
 
 ### `Core.subscription.enable`
 
@@ -271,11 +343,17 @@ More information [here](https://docs.midtrans.com/reference/api-methods-1)
 
 > Activate a customer's subscription account with a specific `subscription_id`, so that the customer can start paying for the subscription immediately.
 
+**[Reference](https://docs.midtrans.com/reference/enable-subscription)**
+
+---
+
 ### `Core.subscription.update`
 
 **PATCH** **/v1/subscriptions/{subscription_id}**
 
 > Update the details of a customer's existing subscription account with the specific `subscription_id`. Successful request returns `status_message` indicating that the subscription details are updated.
+
+**[Reference](https://docs.midtrans.com/reference/update-subscription)**
 
 ---
 

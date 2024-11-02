@@ -1,1 +1,1 @@
-[Core Api](core) | [Snap Api](snap) | [Contributing](../#contributing) | [License](../#license)
+[Core](core) | [Snap](snap) | [Contributing](../#contributing) | [License](../#license)
