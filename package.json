@@ -19,19 +19,19 @@
 	"files": [
 		"dist"
 	],
+	"directories": {
+		"example": "examples"
+	},
 	"keywords": [
 		"api",
 		"midtrans",
-		"payment"
+		"payments",
+		"client"
 	],
 	"author": "FrierenDv",
 	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/xct007/midtrans-client/issues"
-	},
-	"imports": {
-		"@xct007/midtrans-client": ".",
-		"@xct007/midtrans-client/*": "./src/*"
 	},
 	"exports": {
 		".": {
