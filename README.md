@@ -75,6 +75,8 @@ midtransClient.Snap.create({
 
 ## Documentation
 
+For hands-on examples, please refer to the [examples](docs) directory.
+
 For detailed API documentation, please refer to the [Midtrans API Documentation](https://docs.midtrans.com/reference).
 
 ## Contributing
