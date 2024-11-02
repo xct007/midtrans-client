@@ -17,7 +17,7 @@ npm install @xct007/midtrans-client
 
 ```javascript
 // CommonJS
-const MidtransClient = require('@xct007/midtrans-client');
+const MidtransClient = require('@xct007/midtrans-client').default;
 
 // ES Modules
 import MidtransClient from '@xct007/midtrans-client';
