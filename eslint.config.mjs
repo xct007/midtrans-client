@@ -1,3 +1,4 @@
+import eslintPluginPrettier from "eslint-plugin-prettier/recommended";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
@@ -9,16 +10,8 @@ export default [
 	...tseslint.configs.recommended,
 	{
 		rules: {
-			curly: ["error", "all"],
+			curly: ["error"],
 			"no-else-return": ["error", { allowElseIf: false }],
-			camelcase: [
-				"error",
-				{
-					properties: "always",
-					ignoreDestructuring: false,
-					allow: ["^[a-z]+(_[a-z]+)+$"],
-				},
-			],
 			quotes: ["error", "double", { avoidEscape: true }],
 			semi: ["error", "always"],
 			"space-before-function-paren": [
@@ -29,31 +22,41 @@ export default [
 					asyncArrow: "always",
 				},
 			],
-			indent: [
-				"error",
-				"tab",
+			"arrow-parens": ["error", "always"],
+			"no-mixed-spaces-and-tabs": ["error", "smart-tabs"],
+			"no-unused-vars": [
+				"warn",
 				{
-					SwitchCase: 1,
-					VariableDeclarator: { var: 1, let: 1, const: 1 },
-					outerIIFEBody: 1,
-					MemberExpression: 1,
-					FunctionDeclaration: { parameters: 1, body: 1 },
-					FunctionExpression: { parameters: 1, body: 1 },
-					CallExpression: { arguments: 1 },
-					ArrayExpression: 1,
-					ObjectExpression: 1,
-					ImportDeclaration: 1,
-					flatTernaryExpressions: false,
-					ignoreComments: false,
-					ignoredNodes: ["ConditionalExpression"],
+					vars: "all",
+					args: "after-used",
+					ignoreRestSiblings: true,
+					argsIgnorePattern: "^_",
+					varsIgnorePattern: "^_",
 				},
 			],
-			"no-tabs": ["error", { allowIndentationTabs: true }],
-			"no-unused-vars": [
+		},
+	},
+	{
+		plugins: {
+			prettier: eslintPluginPrettier.plugins.prettier,
+		},
+		rules: {
+			"prettier/prettier": [
 				"error",
-				{ varsIgnorePattern: "^_", argsIgnorePattern: "^_" },
+				{
+					plugins: ["@trivago/prettier-plugin-sort-imports"],
+					useTabs: true,
+					tabWidth: 4,
+					semi: true,
+					singleQuote: false,
+					quoteProps: "as-needed",
+					jsxSingleQuote: false,
+					trailingComma: "es5",
+					bracketSpacing: true,
+					arrowParens: "always",
+					endOfLine: "lf",
+				},
 			],
-			"@typescript-eslint/ban-ts-comment": "off",
 		},
 	},
 ];
