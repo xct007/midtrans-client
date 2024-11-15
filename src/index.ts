@@ -35,7 +35,7 @@ export interface MidtransClientOptions {
 	 * [Sandbox](https://dashboard.sandbox.midtrans.com/settings/access-keys)
 	 * key
 	 *
-	 * default: `env['MIDTRANS_SERVER_KEY']` || `env['MIDTRANS_SANDBOX_KEY']`
+	 * default: `env['MIDTRANS_SERVER_KEY']` || `env['MIDTRANS_SANDBOX_SERVER_KEY']`
 	 */
 	serverKey?: string;
 	/**
@@ -65,7 +65,7 @@ export class MidtransClient extends Http.Client {
 
 		const serverKey =
 			(isSandbox
-				? readEnv("MIDTRANS_SANDBOX_KEY")
+				? readEnv("MIDTRANS_SANDBOX_SERVER_KEY")
 				: readEnv("MIDTRANS_SERVER_KEY")) || _serverKey;
 
 		if (!serverKey || !clientKey) {
@@ -95,7 +95,6 @@ export class MidtransClient extends Http.Client {
 	 * More information see Core Api [Overview](https://docs.midtrans.com/en/core-api/core-api-overview)
 	 */
 	readonly Core = new Core.Api(this);
-
 	/**
 	 * Midtrans Snap API
 	 *
@@ -109,6 +108,9 @@ const readEnv = (key: string): string | undefined => {
 };
 
 export {
+	BankTransferChannel,
+	PaymentChannelName,
+	CustomerDetails,
 	CaptureReq,
 	ChargeReq,
 	ChargeRsp,
@@ -119,19 +121,29 @@ export {
 } from "./resource";
 export {
 	CoreBaseRsp,
-	CustomerDetails,
 	TokenizeReq,
+	DirectRefundReq,
+	DirectRefundRsp,
 	SubsReq,
 	SubsPaymentType,
 	SubsReqBase,
 	SubsReqRetrySchedule,
 	SubsReqSchedule,
 	SubsRsp,
-	DirectRefundReq,
-	DirectRefundRsp,
+	PaymentLinkCreateReq,
+	PaymentLinkCreateRsp,
+	PaymentLinkCreditCard,
+	PaymentLinkCustomField,
+	PaymentLinkGetRsp,
+	InvoiceBaseReq,
+	InvoicePaymentLink,
+	InvoicePaymentType,
+	InvoiceReq,
+	InvoiceRsp,
+	InvoiceStatus,
+	InvoiceVirtualAccount,
 } from "./core";
 export {
-	PaymentChannelName,
 	SnapReqBase,
 	SnapBank,
 	SnapCreditCardReq,
