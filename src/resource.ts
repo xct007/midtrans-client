@@ -2,11 +2,32 @@ export type Banks = "permata" | "bca" | "bni" | "bri" | "cimb";
 export type EWallet = "qris" | "gopay" | "shopeepay";
 export type Otc = "alfamart" | "indomaret";
 export type Cardless = "akulaku" | "kredivo";
+export type Payments = Banks | EWallet | Otc | Cardless;
 
 export type PaymentType =
 	| "bank_transfer"
 	| "credit_card"
 	| "cstore"
+	| EWallet
+	| Cardless;
+
+export type BankTransferChannel =
+	| "bca_klikpay"
+	| "bri_epay"
+	| "cimb_clicks"
+	| "danamon_online"
+	| "bca_va"
+	| "permata_va"
+	| "other_va"
+	| "bni_va"
+	| "bri_va"
+	| "uob_ezpay"
+	| "echannel";
+
+export type PaymentChannelName =
+	| "credit_card"
+	| BankTransferChannel
+	| Otc
 	| EWallet
 	| Cardless;
 
@@ -62,11 +83,10 @@ export interface QrisRsp extends EWalletBaseRsp {
 	currency: string;
 	fraud_status: FraudStatus;
 	actions: Action[];
+	expiry_time: string;
 }
 
-export type GoPayRsp = EWalletBaseRsp;
-
-export interface ShopeePayRsp extends GoPayRsp {
+export interface ShopeePayRsp extends EWalletBaseRsp {
 	shopeepay_reference_number: string;
 	reference_id: string;
 }
@@ -105,15 +125,13 @@ export type ChargeRsp<
 > = MidtransRspBase &
 	(T extends "bank_transfer"
 		? BankTransferRsp<B>
-		: T extends "qris"
+		: T extends "qris" | "gopay"
 			? QrisRsp
-			: T extends "gopay"
-				? GoPayRsp
-				: T extends "shopeepay"
-					? ShopeePayRsp
-					: T extends "cstore"
-						? OtcAlfaMartRsp | OtcIndoMartRsp
-						: unknown);
+			: T extends "shopeepay"
+				? ShopeePayRsp
+				: T extends "cstore"
+					? OtcAlfaMartRsp | OtcIndoMartRsp
+					: unknown);
 
 export interface CaptureReq {
 	/**
@@ -238,9 +256,6 @@ interface AddressBase {
 	 * Customer's phone number.
 	 */
 	phone?: string;
-	/**
-	 * Customer's billing address.
-	 */
 }
 export interface CustomerDetail extends AddressBase {
 	/**
@@ -359,7 +374,7 @@ export interface CreditCard {
 	 *
 	 * Valid values are: mandiri, bni, cimb, bca, maybank, and bri.
 	 */
-	bank?: string;
+	bank?: Banks;
 	/**
 	 * Installment tenure in terms of months.
 	 */
@@ -401,7 +416,7 @@ export type CustomField = {
 	custom_field3?: string;
 };
 
-export type BankTransferBs = {
+export type BankTransferBase = {
 	bank: Banks;
 	va_number?: string;
 };
@@ -428,7 +443,7 @@ export type BankTransfer =
 				recipient_name: string;
 			};
 	  }
-	| BankTransferBs;
+	| BankTransferBase;
 
 export interface BankTransferReq {
 	/**
@@ -558,13 +573,30 @@ export interface CreditCardReq {
 		bins?: string[];
 		type?: string;
 		save_token_id?: boolean;
+		authentication?: boolean;
 		callback_type: "js_event" | "form";
 		channel?: "dragon" | "mti" | "cybersource" | "braintree" | "mpgs";
 	};
 }
-// export type ChargeReq<T extends ReqBase = ReqBase> = ReqBase & (
-// T["payment_type"] extends "bank_transfer" ? BankTransferReq
-// ) & CustomField
+
+export interface CustomerDetails {
+	/**
+	 * Customer first name
+	 */
+	first_name: string;
+	/**
+	 * Customer last name
+	 */
+	last_name: string;
+	/**
+	 * Customer last Email
+	 */
+	email: string;
+	/**
+	 * Customer last Phone number
+	 */
+	phone: string;
+}
 
 export type ChargeReq = ReqBase &
 	(
