@@ -1,17 +1,370 @@
+import {
+	CaptureReq,
+	ChargeReq,
+	ChargeRsp,
+	MidtransRspBase,
+	RegisterCardReq,
+	RegisterCardRsp,
+} from "../resource";
+import { Shared } from "../shared";
+import { Invoice } from "./invoice";
+import { PaymentLink } from "./payment-link";
+import { Subscription } from "./subscription";
+
+export const COREAPI_BASEURL = "https://api.midtrans.com";
+export const COREAPI_BASEURL_SANDBOX = "https://api.sandbox.midtrans.com";
+
+/**
+ * Representing Core API
+ */
+export class Api extends Shared {
+	/**
+	 * API version
+	 *
+	 * TODO: Do something with this
+	 */
+	private readonly _apiVersion = "/v2";
+
+	private _buildUrl(url: string, path = this._apiVersion) {
+		return `${path}${url}`;
+	}
+	/**
+	 * Tokenize payment card information before being charged.
+	 */
+	getToken<T extends CoreBaseRsp = CoreBaseRsp>(
+		params: TokenizeReq
+	): Promise<
+		(T extends {
+			status_code: "200" | "201";
+		}
+			? {
+					token_id: string;
+					hash: string;
+				}
+			: T) & {
+			validation_messages: string[];
+			id: string;
+		}
+	> {
+		return this._client._core.get(this._buildUrl("/token"), {
+			// Idk
+			client_key: this._client._core.clientKey,
+			...params,
+		});
+	}
+	/**
+	 * Perform a transaction with various available payment methods and features.
+	 */
+	charge<T extends ChargeReq = ChargeReq>(
+		body: T
+	): Promise<
+		ChargeRsp<
+			T["payment_type"],
+			T extends { payment_type: "bank_transfer" }
+				? T["bank_transfer"]["bank"]
+				: undefined
+		>
+	> {
+		return this._client._core.post(this._buildUrl("/charge"), body);
+	}
+	/**
+	 * Capture an authorized transaction for card payment.
+	 */
+	capture<T>(body: CaptureReq): Promise<T & MidtransRspBase> {
+		return this._client._core.post(this._buildUrl("/capture"), body);
+	}
+	/**
+	 * Approve a transaction with certain `order_id` which gets challenge status from Fraud Detection System.
+	 */
+	approve<T>(order_id: string): Promise<T & MidtransRspBase> {
+		return this._client._core.post(this._buildUrl(`/${order_id}/approve`));
+	}
+	/**
+	 * Deny a transaction with a specific `order_id`, flagged as challenge by Fraud Detection System.
+	 */
+	deny<T>(order_id: string): Promise<T & MidtransRspBase> {
+		return this._client._core.post(this._buildUrl(`/${order_id}/deny`));
+	}
+	/**
+	 * Cancel a transaction with a specific `order_id`.
+	 *
+	 * Note: Cancelation can only be done before settlement process.
+	 */
+	cancel<T>(order_id: string): Promise<T & MidtransRspBase> {
+		return this._client._core.post(this._buildUrl(`/${order_id}/cancel`));
+	}
+	/**
+	 * Update the transaction status of a specific `order_id`, from pending to expired.
+	 */
+	expire<T>(order_id: string): Promise<T & MidtransRspBase> {
+		return this._client._core.post(this._buildUrl(`/${order_id}/expire`));
+	}
+	/**
+	 * Update the transaction status of a specific `order_id`, from settlement to refund.
+	 *
+	 * Refund transaction is supported only for
+	 * `credit_card`, `gopay`, `shopeepay`, `QRIS`, `kredivo` and `akulaku` payment methods.
+	 */
+	refund<T>(order_id: string): Promise<T & MidtransRspBase> {
+		return this._client._core.post(this._buildUrl(`/${order_id}/refund`));
+	}
+	/**
+	 * Send refund to the customer's bank or the payment provider and update the transaction status to refund.
+	 */
+	directRefund(
+		order_id: string,
+		body: DirectRefundReq
+	): Promise<DirectRefundRsp> {
+		return this._client._core.post(
+			this._buildUrl(`/${order_id}/refund/online/direct`),
+			body
+		);
+	}
+	/**
+	 * Get the transaction status of a specific `order_id`.
+	 *
+	 * *Note*: If using BI SNAP and DANA payment methods, please only use Transaction ID to get status.
+	 */
+	status<T>(order_id: string): Promise<T & MidtransRspBase> {
+		return this._client._core.get(this._buildUrl(`/${order_id}/status`));
+	}
+	/**
+	 * Get the transaction status multiple B2B transactions related to certain order_id.
+	 */
+	statusB2B<T>(
+		order_id: string,
+		opts: { page: number; per_page: number } = {
+			page: 0,
+			per_page: 10,
+		}
+	): Promise<
+		CoreBaseRsp & {
+			transactions: (T & MidtransRspBase)[];
+		}
+	> {
+		return this._client._core.get(this._buildUrl(`/${order_id}/status`), {
+			page: opts.page.toString(),
+			per_page: opts.per_page.toString(),
+		});
+	}
+	/**
+	 * Register customer's card information (card number and expiry) to be used for One Click and Two Click transactions.
+	 */
+	registerCard(opts: RegisterCardReq): Promise<RegisterCardRsp> {
+		return this._client._core.get(
+			this._buildUrl("/card/register"),
+			opts as unknown as Record<string, string>
+		);
+	}
+	/**
+	 * Get the point balance of the card in denomination amount.
+	 */
+	pointInquiry(
+		token_id: string,
+		gross_amount?: string
+	): Promise<
+		CoreBaseRsp & {
+			transaction_time: string;
+			point_balance_amount: string;
+		}
+	> {
+		return this._client._core.get(
+			this._buildUrl(`/card/register/${token_id}`),
+			{
+				gross_amount,
+			}
+		);
+	}
+	/**
+	 * Used to link the customer's account to create payment for certain channel.
+	 */
+	createGoPayAccount(opts: {
+		payment_type: string;
+		gopay_partner: {
+			phone_number: string;
+			country_code: string;
+			redirect_url: string;
+		};
+	}): Promise<
+		Omit<CoreBaseRsp, "status_message"> & {
+			payment_type: string;
+			account_id: string;
+			account_status: string;
+			actions: {
+				name: string;
+				method: string;
+				url: string;
+			}[];
+		}
+	> {
+		return this._client._core.post(this._buildUrl("/pay/account"), opts);
+	}
+	/**
+	 * Get customer payment account details.
+	 *
+	 * [Get Pay Account API](https://docs.midtrans.com/reference/get-pay-account)
+	 * is called to retrieve GoPay Token, needed for GoPay subscriptions.
+	 */
+	getGoPayAccount(account_id: string): Promise<
+		Omit<CoreBaseRsp, "status_message"> & {
+			payment_type: string;
+			account_id: string;
+			account_status: string;
+			metadata: {
+				payment_options: {
+					name: string;
+					active: boolean;
+					balance: {
+						value: number;
+						currency: string;
+					};
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					metadata: Record<string, any>;
+					token: string;
+				}[];
+			};
+		}
+	> {
+		return this._client._core.get(
+			this._buildUrl(`/pay/account/${account_id}`)
+		);
+	}
+	/**
+	 * Unbind a linked customer account.
+	 */
+	unbindGoPayAccount(account_id: string): Promise<
+		Omit<CoreBaseRsp, "status_message"> & {
+			payment_type: string;
+			account_id: string;
+			account_status: string;
+			channel_response_code: string;
+			channel_response_message: string;
+		}
+	> {
+		return this._client._core.post(
+			this._buildUrl(`/pay/account/${account_id}/unbind`)
+		);
+	}
+	/**
+	 * Get bin metadata.
+	 *
+	 * @param {string} bin
+	 * @returns {Promise<{ data: Record<string, unknown> }>}
+	 */
+	getBinMetadata(bin: string): Promise<{ data: Record<string, unknown> }> {
+		return this._client._core.get(this._buildUrl(`/pay/account/${bin}`));
+	}
+	/**
+	 * Subscription API Methods
+	 *
+	 * Ref: https://docs.midtrans.com/reference/api-methods-1
+	 */
+	subscription: Subscription = new Subscription(this._client);
+	/**
+	 * Payment Link API Methods
+	 *
+	 * Ref: https://docs.midtrans.com/reference/overview-12
+	 */
+	paymentLink: PaymentLink = new PaymentLink(this._client);
+	/**
+	 * Invoice API Methods
+	 *
+	 * Ref: https://docs.midtrans.com/reference/overview-2
+	 */
+	invoice: Invoice = new Invoice(this._client);
+}
+
+export interface TokenizeReq {
+	/**
+	 * The token ID of credit card saved previously.
+	 */
+	token_id: string;
+	/**
+	 * The 16 digits Credit Card number.
+	 */
+	card_number: string;
+	/**
+	 * The CVV number printed on the card.
+	 */
+	card_cvv?: string;
+	/**
+	 * The card expiry month in MM format.
+	 */
+	card_exp_month: string;
+	/**
+	 * The card expiry year in YYYY format.
+	 */
+	card_exp_year: string;
+	/**
+	 * The one-time token is shown on the customer's phone mobile banking.
+	 */
+	bank_one_time_token?: string;
+}
+
+export interface CoreBaseRsp {
+	/**
+	 * Status code of transaction charge result.
+	 */
+	status_code: string;
+	/**
+	 * Status message describing the result of the API request.
+	 */
+	status_message: string;
+}
+
+export interface DirectRefundReq {
+	/**
+	 * Refund key.
+	 */
+	refund_key: string;
+	/**
+	 * Total refund amount.
+	 */
+	amount: number;
+	/**
+	 * The reason.
+	 */
+	reason: string;
+}
+
+export interface DirectRefundRsp extends MidtransRspBase {
+	/**
+	 * Total charge back id.
+	 */
+	refund_chargeback_id: number;
+	/**
+	 * Total amount.
+	 */
+	refund_amount: string;
+	/**
+	 * Refund key.
+	 */
+	refund_key: string;
+}
 export {
-	Api,
-	CoreBaseRsp,
-	CustomerDetails,
-	TokenizeReq,
 	SubsReq,
 	SubsPaymentType,
 	SubsReqBase,
 	SubsReqRetrySchedule,
 	SubsReqSchedule,
 	SubsRsp,
-	DirectRefundReq,
-	DirectRefundRsp,
-} from "./api";
+} from "./subscription";
 
-export const COREAPI_BASEURL = "https://api.midtrans.com";
-export const COREAPI_BASEURL_SANDBOX = "https://api.sandbox.midtrans.com";
+export {
+	PaymentLinkCreateReq,
+	PaymentLinkCreateRsp,
+	PaymentLinkCreditCard,
+	PaymentLinkCustomField,
+	PaymentLinkGetRsp,
+} from "./payment-link";
+
+export {
+	InvoiceBaseReq,
+	InvoicePaymentLinkBase,
+	InvoicePaymentLink,
+	InvoicePaymentType,
+	InvoiceReq,
+	InvoiceRsp,
+	InvoiceStatus,
+	InvoiceVirtualAccount,
+} from "./invoice";
