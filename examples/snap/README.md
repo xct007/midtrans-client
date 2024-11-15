@@ -5,10 +5,11 @@
 ```js
 import MidtransClient from "@xct007/midtrans-client";
 
-const midtransClient = new MidtransClient({
+const { Snap } = new MidtransClient({
 	sandbox: true,
 	clientKey: "CLIENT_KEY",
 	serverKey: "SERVER_KEY",
+	throwHttpErrors: true,
 });
 ```
 
@@ -19,7 +20,7 @@ Create transaction.
 ref: [Snap Backend Integration](https://docs.midtrans.com/reference/backend-integration)
 
 ```js
-midtransClient.Snap.create({
+Snap.create({
 	transaction_details: {
 		order_id: "order-id",
 		gross_amount: 10000,
@@ -37,7 +38,7 @@ midtransClient.Snap.create({
 	});
 ```
 
-## `capture`
+## `Snap.getPreferences`
 
 Get Snap Preferences
 
@@ -45,7 +46,7 @@ ref: [Preference API
 ](https://docs.midtrans.com/reference/snap-checkout-preference-api)
 
 ```js
-midtransClient.Snap.getPreferences()
+Snap.getPreferences()
 	.then((response) => {
 		console.log("Response:", response);
 	})
