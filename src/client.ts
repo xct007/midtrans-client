@@ -2,7 +2,7 @@ import https from "https";
 import { HttpClientError, HttpStatusError } from "./error";
 import { VERSION } from "./version";
 
-type HttpMethod = "GET" | "POST" | "PATCH";
+type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
 // TODO
 type Headers = {
 	"Idempotency-Key"?: string;
@@ -166,6 +166,10 @@ export class Http {
 
 	public async patch<T>(url: string, data?: unknown): Promise<T> {
 		return this.makeRequest("PATCH", url, data);
+	}
+
+	public async delete<T>(url: string, data?: unknown): Promise<T> {
+		return this.makeRequest("DELETE", url, data);
 	}
 }
 
