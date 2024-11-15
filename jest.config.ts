@@ -15,6 +15,7 @@ const config: JestConfigWithTsJest = {
 	coverageReporters: ["text", "lcov"],
 	testEnvironment: "node",
 	prettierPath: require.resolve("prettier"),
+	setupFiles: ["<rootDir>/jest.setup.ts"],
 };
 
 export default config;
