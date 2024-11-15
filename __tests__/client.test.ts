@@ -5,10 +5,8 @@ import * as Snap from "../src/snap";
 describe("MidtransClient", () => {
 	const mockEnv = (sandbox: boolean, serverKey: string) => {
 		process.env.MIDTRANS_SANDBOX = sandbox.toString();
-
-		process.env.MIDTRANS_SANDBOX_KEY = sandbox ? serverKey : "";
+		process.env.MIDTRANS_SANDBOX_SERVER_KEY = sandbox ? serverKey : "";
 		process.env.MIDTRANS_SERVER_KEY = sandbox ? undefined : serverKey;
-
 		process.env.MIDTRANS_SANDBOX_CLIENT_KEY = sandbox
 			? undefined
 			: serverKey;
