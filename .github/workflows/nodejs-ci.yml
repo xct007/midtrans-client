@@ -22,8 +22,12 @@ jobs:
                   cache: "npm"
             - name: "Install dependencies"
               run: npm ci
+            - name: "Linting"
+              run: npm run lint
             - name: "Build"
               run: npm run build --if-present
+            - name: "Setup scripts permission"
+              run: chmod +x ./scripts/build
             - name: "Test"
               env:
                   MIDTRANS_SANDBOX_CLIENT_KEY: ${{ secrets.MIDTRANS_SANDBOX_CLIENT_KEY }}
