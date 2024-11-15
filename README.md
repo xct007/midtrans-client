@@ -17,30 +17,30 @@ npm install @xct007/midtrans-client
 
 ```javascript
 // CommonJS
-const MidtransClient = require('@xct007/midtrans-client').default;
+const MidtransClient = require("@xct007/midtrans-client").default;
 
 // ES Modules
-import MidtransClient from '@xct007/midtrans-client';
+import MidtransClient from "@xct007/midtrans-client";
 ```
 
 ### **Initialize the client**
 
 ```javascript
-const midtransClient = new MidtransClient({
+const { Core, Snap } = new MidtransClient({
 	sandbox: true, // Set to false for production
 	clientKey: "YOUR_CLIENT_KEY",
 	serverKey: "YOUR_SERVER_KEY",
-	throwHttpErrors: false,
+	throwHttpErrors: true,
 });
 ```
 
 ### **Core API Example**
 
 ```javascript
-midtransClient.Core.charge({
+Core.charge({
 	payment_type: "bank_transfer",
 	transaction_details: {
-		order_id: "order-id-123",
+		order_id: "order-id-" + new Date().getTime(),
 		gross_amount: 10000,
 	},
 	bank_transfer: {
@@ -58,7 +58,7 @@ midtransClient.Core.charge({
 ### **Snap API Example**
 
 ```javascript
-midtransClient.Snap.create({
+Snap.create({
 	transaction_details: {
 		order_id: "order-id-" + new Date().getTime(),
 		gross_amount: 10000,
