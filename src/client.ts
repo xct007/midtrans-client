@@ -119,9 +119,13 @@ export class Http {
 	) {
 		try {
 			const parsedData = JSON.parse(rawData);
-			const midStatusCode = Number(parsedData.status_code);
+			const midStatusCode = parsedData.status_code;
 
-			if (midStatusCode >= 400 && this.throwHttpErrors) {
+			if (
+				midStatusCode &&
+				Number(midStatusCode) >= 400 &&
+				this.throwHttpErrors
+			) {
 				return reject(
 					new HttpStatusError(
 						parsedData.status_message,
