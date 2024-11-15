@@ -10,5 +10,6 @@
 	"files.trimTrailingWhitespace": true,
 	"[typescript]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	}
+	},
+	"deepscan.enable": true
 }
