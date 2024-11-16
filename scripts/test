@@ -8,4 +8,4 @@ cd "$(dirname "$0")/.." || exit
 ./node_modules/.bin/jest --runInBand --verbose --config jest.config.ts --testPathPattern client.test.ts
 
 # Do other tests except client.test.ts
-./node_modules/.bin/jest --runInBand --verbose --config jest.config.ts --testPathPattern '^(?!.*client.test.ts).*$'
+./node_modules/.bin/jest --runInBand --verbose --coverage --config jest.config.ts --testPathPattern '^(?!.*client.test.ts).*$'
