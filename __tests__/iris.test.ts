@@ -5,7 +5,7 @@ describe("IRIS API", () => {
 
 	beforeAll(() => {
 		iris = new MidtransClient({
-			sandbox: false,
+			sandbox: true,
 			throwHttpErrors: true,
 		}).Iris;
 	});
