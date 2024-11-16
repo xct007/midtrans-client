@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e -o pipefail
+
+cd "$(dirname "$0")/.." || exit
+
+# Do client.test.ts
+./node_modules/.bin/jest --runInBand --verbose --config jest.config.ts --testPathPattern client.test.ts
+
+# Do other tests except client.test.ts
+./node_modules/.bin/jest --runInBand --verbose --config jest.config.ts --testPathPattern '^(?!.*client.test.ts).*$'
