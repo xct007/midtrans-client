@@ -1,11 +1,10 @@
-import https from "https";
-import { HttpClientError, HttpStatusError } from "./error";
+import { randomBytes } from "crypto";
+import { fetch, setGlobalOrigin } from "undici";
+import { MidtransError } from "./error";
 import { VERSION } from "./version";
 
 type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
-// TODO: headers for payouts/BI-SNAP API
-// https://docs.midtrans.com/reference/https-header
-// https://docs.midtrans.com/reference/core-api-snap-open-api-overview
+
 type RequestHeaders = {
 	Authorization?: string;
 	"Idempotency-Key"?: string;
@@ -15,6 +14,7 @@ type RequestHeaders = {
 interface RequestOptions {
 	method: HttpMethod;
 	headers: RequestHeaders;
+	body?: string;
 }
 
 interface HttpOptions {
@@ -22,12 +22,16 @@ interface HttpOptions {
 	clientKey?: string;
 	serverKey?: string;
 	throwHttpErrors?: boolean;
+	useIdempotencyKey?: boolean;
 }
 
 export class Http {
 	private readonly baseUrl: string;
-	protected readonly _authHeader: string | undefined;
 	private readonly throwHttpErrors: boolean | undefined;
+	protected readonly _authHeader: string | undefined;
+	protected readonly fetch: typeof fetch;
+
+	private useIdempotencyKey: boolean | undefined;
 
 	/**
 	 * Some of API endpoints require client key
@@ -50,28 +54,34 @@ export class Http {
 		clientKey,
 		serverKey,
 		throwHttpErrors,
+		useIdempotencyKey,
 	}: HttpOptions) {
 		this.baseUrl = baseUrl;
 		this.throwHttpErrors = throwHttpErrors ?? false;
 
-		// Bypass password because midtrans authentication doesn't require password
 		if (serverKey) {
 			this._authHeader = `Basic ${Buffer.from(`${serverKey}:`).toString("base64")}`;
 		}
-
 		this.clientKey = clientKey || "";
+		this.useIdempotencyKey = useIdempotencyKey ?? false;
+		this.fetch = fetch;
 	}
 
-	/**
-	 * Build headers, add custom headers here
-	 * @param {RequestHeaders} headers
-	 * @returns {RequestHeaders}
-	 */
+	private buildIdempotencyKey(): string {
+		const timestamp = Date.now().toString();
+		const randomString = randomBytes(64).toString("hex");
+		const uniqueKey = `${timestamp}-${randomString}`;
+		return uniqueKey.length > 100 ? uniqueKey.substring(0, 100) : uniqueKey;
+	}
+
 	buildHeaders(headers?: RequestHeaders): RequestHeaders {
 		const defaultHeaders: RequestHeaders = {
 			"Content-Type": "application/json",
 			Accept: "application/json",
 			"User-Agent": `Midtrans-Client/${VERSION} (https://github.com/xct007/midtrans-client)`,
+			...(this.useIdempotencyKey
+				? { "Idempotency-Key": this.buildIdempotencyKey() }
+				: {}),
 		};
 
 		if (this._authHeader) {
@@ -81,16 +91,10 @@ export class Http {
 		return { ...defaultHeaders, ...headers };
 	}
 
-	/**
-	 * Sanitize URL
-	 * @param {string} url
-	 * @returns {string}
-	 */
-	buildUrl(url: string): string {
-		if (!url.startsWith("/")) {
-			url = `/${url}`;
-		}
-		return `${this.baseUrl}${url}`;
+	sanitizePath(path: string): string {
+		// explicitly set global origin
+		setGlobalOrigin(new URL(this.baseUrl).origin);
+		return path.startsWith("/") ? path : `/${path}`;
 	}
 
 	async makeRequest<T>(
@@ -99,67 +103,81 @@ export class Http {
 		data?: unknown,
 		headers?: RequestHeaders
 	): Promise<T> {
-		// const headers = this.buildHeaders();
 		const options: RequestOptions = {
 			method,
 			headers: this.buildHeaders(headers),
 		};
 
-		return new Promise<T>((resolve, reject) => {
-			const req = https.request(this.buildUrl(url), options, (res) => {
-				const statusCode = res.statusCode || 0;
-				if (statusCode >= 400 && this.throwHttpErrors) {
-					res.emit("error", `HTTP status code ${statusCode}`);
-				}
-				let rawData = "";
-				res.on("data", (chunk) => (rawData += chunk));
-				res.on("end", () => this._then<T>(rawData, resolve, reject));
-			});
-
-			req.on("error", (e) => this._catch(e, reject));
-
-			if (data) {
-				const dataString = JSON.stringify(data);
-				if (Buffer.byteLength(dataString) > this.MAX_REQUEST_SIZE) {
-					req.emit("error", "Request size exceeds 16KB limit");
-				}
-				req.write(dataString);
+		if (data) {
+			const dataString = JSON.stringify(data);
+			if (Buffer.byteLength(dataString) > this.MAX_REQUEST_SIZE) {
+				throw new MidtransError("Request size exceeds 16KB limit");
 			}
+			options.body = dataString;
+		}
 
-			req.end();
-		});
-	}
-
-	private _then<T>(
-		rawData: string,
-		resolve: (_value: T) => void,
-		reject: (_reason?: unknown) => void
-	) {
 		try {
-			const parsedData = JSON.parse(rawData);
-			const midStatusCode = parsedData.status_code;
-
-			if (
-				midStatusCode &&
-				Number(midStatusCode) >= 400 &&
-				this.throwHttpErrors
-			) {
-				return reject(
-					new HttpStatusError(
-						parsedData.status_message,
-						midStatusCode,
-						parsedData
-					)
-				);
-			}
-			resolve(parsedData);
-		} catch (e) {
-			this._catch(e, reject);
+			const response = await this.fetch(this.sanitizePath(url), options);
+			const rawData = await response.text();
+			const contentType = response.headers.get("content-type") as
+				| string
+				| undefined;
+			return this._handleResponse<T>(
+				response.status,
+				rawData,
+				contentType
+			);
+		} catch (error) {
+			this._handleError(error);
 		}
 	}
 
-	private _catch(error: unknown, reject: (_reason?: unknown) => void) {
-		reject(new HttpClientError("An error occurred in HttpClient", error));
+	private _handleResponse<T>(
+		statusCode: number,
+		rawData: string,
+		contentType?: string
+	): T {
+		if (statusCode >= 400 && this.throwHttpErrors) {
+			throw new MidtransError(
+				`HTTP Error: ${statusCode}`,
+				rawData,
+				statusCode
+			);
+		}
+
+		try {
+			return this._parseResponse<T>(rawData, contentType);
+		} catch {
+			// force to return rawData if failed to parse
+			if (statusCode === 200) {
+				return rawData as unknown as T;
+			}
+			throw new MidtransError(
+				"Failed to parse response",
+				rawData,
+				statusCode
+			);
+		}
+	}
+
+	private _parseResponse<T>(rawData: string, contentType?: string): T {
+		if (!rawData.trim()) {
+			throw new MidtransError("Empty response received");
+		}
+
+		if (contentType && contentType.includes("application/json")) {
+			try {
+				return JSON.parse(rawData) as T;
+			} catch {
+				throw new MidtransError("Invalid JSON response");
+			}
+		}
+
+		return rawData as unknown as T;
+	}
+
+	private _handleError(error: unknown): never {
+		throw new MidtransError("An error occurred in HttpClient", error);
 	}
 
 	private _buildParams(params?: unknown): string {
@@ -178,11 +196,13 @@ export class Http {
 	public async get<T>(
 		url: string,
 		params?: unknown,
-		headers?: Headers
+		headers?: RequestHeaders
 	): Promise<T> {
+		const queryString = params ? `?${this._buildParams(params)}` : "";
 		return this.makeRequest(
 			"GET",
-			`${url}${params ? "?" + this._buildParams(params) : ""}`,
+			`${url}${queryString}`,
+			undefined,
 			headers
 		);
 	}
@@ -215,6 +235,7 @@ export class Http {
 export interface ClientOptions {
 	coreApiBaseUrl: string;
 	snapApiBaseUrl: string;
+	irisApiBaseUrl: string;
 	clientKey: string;
 	serverKey: string;
 	throwHttpErrors?: boolean;
@@ -229,10 +250,15 @@ export class Client {
 	 * Representing snap api client
 	 */
 	_snap: Http;
+	/**
+	 * Representing iris api client
+	 */
+	_iris: Http;
 
 	constructor({
 		coreApiBaseUrl,
 		snapApiBaseUrl,
+		irisApiBaseUrl,
 		clientKey,
 		serverKey,
 		throwHttpErrors,
@@ -249,6 +275,11 @@ export class Client {
 		this._snap = new Http({
 			baseUrl: snapApiBaseUrl,
 			...options,
+		});
+		this._iris = new Http({
+			baseUrl: irisApiBaseUrl,
+			...options,
+			useIdempotencyKey: true,
 		});
 	}
 }
