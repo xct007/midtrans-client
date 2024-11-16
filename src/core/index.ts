@@ -12,8 +12,8 @@ import { Invoice } from "./invoice";
 import { PaymentLink } from "./payment-link";
 import { Subscription } from "./subscription";
 
-export const COREAPI_BASEURL = "https://api.midtrans.com";
-export const COREAPI_BASEURL_SANDBOX = "https://api.sandbox.midtrans.com";
+export const BASEURL = "https://api.midtrans.com";
+export const BASEURL_SANDBOX = "https://api.sandbox.midtrans.com";
 
 /**
  * Representing Core API

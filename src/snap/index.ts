@@ -9,8 +9,8 @@ import {
 } from "../resource";
 import { Shared } from "../shared";
 
-export const SNAP_BASEURL = "https://app.midtrans.com";
-export const SNAP_BASEURL_SANDBOX = "https://app.sandbox.midtrans.com";
+export const BASEURL = "https://app.midtrans.com";
+export const BASEURL_SANDBOX = "https://app.sandbox.midtrans.com";
 
 /**
  * Representing Snap API
@@ -18,18 +18,12 @@ export const SNAP_BASEURL_SANDBOX = "https://app.sandbox.midtrans.com";
 export class Api extends Shared {
 	/**
 	 * Retrieve your current Snap Preference settings.
-	 *
-	 * @returns {Promise<PreferenceRsp>}
 	 */
 	getPreferences(): Promise<PreferenceRsp> {
 		return this._client._snap.get("/snap/v3/merchant-preferences");
 	}
 	/**
 	 * Create new snap transaction.
-	 *
-	 * Making POST request to `/v1/transactions`
-	 * @param {SnapReq} body
-	 * @returns {Promise<SnapRsp>}
 	 */
 	create(body: SnapReq): Promise<SnapRsp> {
 		return this._client._snap.post("/snap/v1/transactions", body);
