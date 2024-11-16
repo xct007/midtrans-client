@@ -1,7 +1,6 @@
 import { randomBytes } from "crypto";
 import { fetch, setGlobalOrigin } from "undici";
 import { MidtransError } from "./error";
-import { VERSION } from "./version";
 
 type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
 
@@ -78,7 +77,8 @@ export class Http {
 		const defaultHeaders: RequestHeaders = {
 			"Content-Type": "application/json",
 			Accept: "application/json",
-			"User-Agent": `Midtrans-Client/${VERSION} (https://github.com/xct007/midtrans-client)`,
+			"User-Agent":
+				"Midtrans-Client/(https://github.com/xct007/midtrans-client)",
 			...(this.useIdempotencyKey
 				? { "Idempotency-Key": this.buildIdempotencyKey() }
 				: {}),
