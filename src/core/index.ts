@@ -1,4 +1,5 @@
 import {
+	ActionRsp,
 	CaptureReq,
 	ChargeReq,
 	ChargeRsp,
@@ -151,10 +152,10 @@ export class Api extends Shared {
 	 * Register customer's card information (card number and expiry) to be used for One Click and Two Click transactions.
 	 */
 	registerCard(opts: RegisterCardReq): Promise<RegisterCardRsp> {
-		return this._client._core.get(
-			this._buildUrl("/card/register"),
-			opts as unknown as Record<string, string>
-		);
+		return this._client._core.get(this._buildUrl("/card/register"), {
+			...opts,
+			client_key: this._client._core.clientKey,
+		} as unknown as Record<string, string>);
 	}
 	/**
 	 * Get the point balance of the card in denomination amount.
@@ -178,25 +179,9 @@ export class Api extends Shared {
 	/**
 	 * Used to link the customer's account to create payment for certain channel.
 	 */
-	createGoPayAccount(opts: {
-		payment_type: string;
-		gopay_partner: {
-			phone_number: string;
-			country_code: string;
-			redirect_url: string;
-		};
-	}): Promise<
-		Omit<CoreBaseRsp, "status_message"> & {
-			payment_type: string;
-			account_id: string;
-			account_status: string;
-			actions: {
-				name: string;
-				method: string;
-				url: string;
-			}[];
-		}
-	> {
+	createGoPayAccount(
+		opts: CreateGoPayAccountReq
+	): Promise<CreateGoPayAccountRsp> {
 		return this._client._core.post(this._buildUrl("/pay/account"), opts);
 	}
 	/**
@@ -205,26 +190,7 @@ export class Api extends Shared {
 	 * [Get Pay Account API](https://docs.midtrans.com/reference/get-pay-account)
 	 * is called to retrieve GoPay Token, needed for GoPay subscriptions.
 	 */
-	getGoPayAccount(account_id: string): Promise<
-		Omit<CoreBaseRsp, "status_message"> & {
-			payment_type: string;
-			account_id: string;
-			account_status: string;
-			metadata: {
-				payment_options: {
-					name: string;
-					active: boolean;
-					balance: {
-						value: number;
-						currency: string;
-					};
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					metadata: Record<string, any>;
-					token: string;
-				}[];
-			};
-		}
-	> {
+	getGoPayAccount(account_id: string): Promise<GetGoPayAccountRsp> {
 		return this._client._core.get(
 			this._buildUrl(`/pay/account/${account_id}`)
 		);
@@ -232,15 +198,9 @@ export class Api extends Shared {
 	/**
 	 * Unbind a linked customer account.
 	 */
-	unbindGoPayAccount(account_id: string): Promise<
-		Omit<CoreBaseRsp, "status_message"> & {
-			payment_type: string;
-			account_id: string;
-			account_status: string;
-			channel_response_code: string;
-			channel_response_message: string;
-		}
-	> {
+	unbindGoPayAccount(
+		account_id: string
+	): Promise<Required<GoPayAccountBaseRsp>> {
 		return this._client._core.post(
 			this._buildUrl(`/pay/account/${account_id}/unbind`)
 		);
@@ -248,11 +208,15 @@ export class Api extends Shared {
 	/**
 	 * Get bin metadata.
 	 *
+	 * Get BIN API (Card Payment).
+	 *
 	 * @param {string} bin
 	 * @returns {Promise<{ data: Record<string, unknown> }>}
 	 */
-	getBinMetadata(bin: string): Promise<{ data: Record<string, unknown> }> {
-		return this._client._core.get(this._buildUrl(`/pay/account/${bin}`));
+	getBinMetadata(bin: string): Promise<{
+		data: BinMetadataRsp;
+	}> {
+		return this._client._core.get(`/v1/bins/${bin}`);
 	}
 	/**
 	 * Subscription API Methods
@@ -341,6 +305,120 @@ export interface DirectRefundRsp extends MidtransRspBase {
 	 */
 	refund_key: string;
 }
+
+export interface BinMetadataRsp {
+	/**
+	 * Indicates whether the card requires registration.
+	 * If the value is `true`, the card requires registration.
+	 */
+	registration_required?: boolean | null;
+	/**
+	 * Name of the country from which the card is issued.
+	 */
+	country_name: string;
+	/**
+	 * The country code.
+	 */
+	country_code: string;
+	/**
+	 * The channel.
+	 *
+	 * e.g. `online_offline`
+	 */
+	channel: string;
+	/**
+	 * The card network provider.
+	 */
+	brand: string;
+	/**
+	 * The BIN type.
+	 */
+	bin_type: string;
+	/**
+	 * The BIN class.
+	 */
+	bin_class: string;
+	/**
+	 * The BIN number.
+	 */
+	bin: string;
+	/**
+	 * The bank code.
+	 */
+	bank_code: string;
+	/**
+	 * The bank name.
+	 */
+	bank: string;
+}
+
+export type GoPayAccountStatus = "PENDING" | "EXPIRED" | "ENABLED" | "DISABLED";
+
+export type GoPayAccountBaseRsp = Omit<CoreBaseRsp, "status_message"> & {
+	/**
+	 * Payment channel associated with the account.
+	 */
+	payment_type: "gopay" | string;
+	/**
+	 * The account ID.
+	 */
+	account_id: string;
+	/**
+	 * The status of the account.
+	 */
+	account_status: GoPayAccountStatus;
+	/**
+	 * The channel response code.
+	 */
+	channel_response_code?: string;
+	/**
+	 * The channel response message.
+	 */
+	channel_response_message?: string;
+};
+
+export type CreateGoPayAccountReq = Pick<
+	GoPayAccountBaseRsp,
+	"payment_type"
+> & {
+	payment_type: "gopay";
+	/**
+	 * GoPay linking specific parameters.
+	 */
+	gopay_partner: {
+		/**
+		 * Phone number linked to the customer's account.
+		 */
+		phone_number: string;
+		/**
+		 * The country code.
+		 */
+		country_code: string;
+		/**
+		 * URL where user is redirected to after finishing the confirmation on Gojek app.
+		 */
+		redirect_url?: string;
+	};
+};
+
+export type CreateGoPayAccountRsp = GoPayAccountBaseRsp & {
+	actions?: ActionRsp[];
+};
+
+export type GetGoPayAccountRsp = GoPayAccountBaseRsp & {
+	payment_type: "gopay";
+	metadata: {
+		name: string;
+		active: boolean;
+		balance: {
+			value: number;
+			currency: string;
+		};
+		metadata: Record<string, unknown>;
+		token: string;
+	};
+};
+
 export {
 	SubsReq,
 	SubsPaymentType,

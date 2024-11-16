@@ -157,13 +157,9 @@ export interface RegisterCardReq {
 	 */
 	card_exp_year: string;
 	/**
-	 * Partner client key credential
-	 */
-	client_key: string;
-	/**
 	 * Function name used for JSONP callback
 	 */
-	callback: string;
+	callback?: string;
 }
 export interface RegisterCardRsp {
 	/**
@@ -611,3 +607,18 @@ export type ChargeReq = ReqBase &
 		| CreditCardReq
 	) &
 	CustomField;
+
+type HTTPMethod = "GET" | "POST" | "DELETE" | "PATCH" | "PUT" | "OPTIONS";
+export type ActionRsp = {
+	name: string;
+	method: HTTPMethod;
+	url: string;
+} & {
+	method: "GET";
+	/**
+	 * Parameters which can be sent for the action.
+	 *
+	 * Only for HTTP methods other than `GET`.
+	 */
+	fields: string[];
+};
