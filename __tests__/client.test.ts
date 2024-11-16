@@ -1,5 +1,6 @@
 import * as Core from "../src/core";
 import MidtransClient, { MidtransClientOptions } from "../src/index";
+import * as Iris from "../src/iris";
 import * as Snap from "../src/snap";
 
 describe("MidtransClient", () => {
@@ -26,20 +27,31 @@ describe("MidtransClient", () => {
 		mockEnv(true, "sandbox-server-key");
 
 		const options: MidtransClientOptions = { sandbox: true };
-		const client = new MidtransClient(options);
+		const {
+			Core: _Core,
+			Snap: _Snap,
+			Iris: _Iris,
+		} = new MidtransClient(options);
 
-		expect(client.Core).toBeInstanceOf(Core.Api);
-		expect(client.Snap).toBeInstanceOf(Snap.Api);
+		expect(_Core).toBeInstanceOf(Core.Api);
+		expect(_Snap).toBeInstanceOf(Snap.Api);
+		expect(_Iris).toBeInstanceOf(Iris.Api);
 	});
 
 	it("should initialize with production mode", () => {
 		mockEnv(false, "production-server-key");
 
 		const options: MidtransClientOptions = { sandbox: false };
-		const client = new MidtransClient(options);
 
-		expect(client.Core).toBeInstanceOf(Core.Api);
-		expect(client.Snap).toBeInstanceOf(Snap.Api);
+		const {
+			Core: _Core,
+			Snap: _Snap,
+			Iris: _Iris,
+		} = new MidtransClient(options);
+
+		expect(_Core).toBeInstanceOf(Core.Api);
+		expect(_Snap).toBeInstanceOf(Snap.Api);
+		expect(_Iris).toBeInstanceOf(Iris.Api);
 	});
 
 	it("should throw an error if server key is missing", () => {
