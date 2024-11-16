@@ -74,6 +74,8 @@ const { payout } = Iris;
 
 ### `payout.create`
 
+Ref: [Create Payout](https://docs.midtrans.com/reference/create-payout)
+
 ```js
 payout
  .create({
@@ -99,6 +101,8 @@ payout
 
 ### `payout.approve`
 
+Ref: [Approve Payout](https://docs.midtrans.com/reference/accept-payout)
+
 ```js
 payout
  .approve({
@@ -114,6 +118,8 @@ payout
 ```
 
 ### `payout.reject`
+
+Ref: [Reject Payout](https://docs.midtrans.com/reference/reject-payout)
 
 ```js
 payout
@@ -131,6 +137,8 @@ payout
 
 ### `payout.get`
 
+Ref: [Get Payout Details](https://docs.midtrans.com/reference/get-payout-details)
+
 ```js
 payout
  .get("1234567890")
@@ -140,6 +148,150 @@ payout
  .catch((error) => {
   console.error("Error:", error);
 });
+```
+
+## `Iris.beneficiary`
+
+`beneficiary` object contains methods to manage beneficiaries.
+
+```js
+const { beneficiary } = Iris;
+```
+
+### `beneficiary.create`
+
+Ref: [Create Beneficiary](https://docs.midtrans.com/reference/create-beneficiaries)
+
+```js
+beneficiary
+ .create({
+  name: "John Doe",
+  account: "33452784",
+  bank: "bca",
+  alias_name: "johnbca",
+  email: "beneficiary@example.com"
+})
+ .then((response) => {
+  console.log("Response: ", response);
+ })
+ .catch((error) => {
+  console.error("Error:", error);
+ });
+```
+
+### `beneficiary.update`
+
+Ref: [Update Beneficiary](https://docs.midtrans.com/reference/update-beneficiaries)
+
+```js
+beneficiary
+ .update({
+  id: "1234567890",
+  name: "John Doe",
+  account: "33452784",
+  bank: "bca",
+  alias_name: "johnbca",
+  email: "beneficiary@example.com"
+})
+ .then((response) => {
+  console.log("Response: ", response);
+ })
+ .catch((error) => {
+  console.error("Error:", error);
+ });
+```
+
+### `beneficiary.lists`
+
+Ref: [List of Beneficiaries](https://docs.midtrans.com/reference/list-of-beneficiaries)
+
+```js
+beneficiary
+ .lists()
+ .then((response) => {
+  console.log("Response: ", response);
+ })
+ .catch((error) => {
+  console.error("Error:", error);
+ });
+```
+
+## `Iris.facilitator`
+
+`facilitator` object contains methods to manage facilitators.
+
+```js
+const { facilitator } = Iris;
+```
+
+### `facilitator.balance`
+
+Ref: [Check Balance (Facilitator)](https://docs.midtrans.com/reference/check-balance-facilitator)
+
+```js
+const bank_account_id = "1234567890";
+
+facilitator
+ .balance(bank_account_id)
+ .then((response) => {
+  console.log("Response: ", response);
+ })
+ .catch((error) => {
+  console.error("Error:", error);
+ });
+```
+
+### `facilitator.lists`
+
+Ref: [Bank Account (Facilitator)](https://docs.midtrans.com/reference/bank-account-facilitator)
+
+```js
+facilitator
+ .lists()
+ .then((response) => {
+  console.log("Response: ", response);
+ })
+ .catch((error) => {
+  console.error("Error:", error);
+ });
+```
+
+## `Iris.aggregator`
+
+`aggregator` object contains methods to manage aggregators.
+
+```js
+const { aggregator } = Iris;
+```
+
+### `aggregator.balance`
+
+Ref: [Check Balance](https://docs.midtrans.com/reference/check-balance-agregator)
+
+```js
+aggregator
+ .balance()
+ .then((response) => {
+  console.log("Response: ", response);
+ })
+ .catch((error) => {
+  console.error("Error:", error);
+ });
+```
+
+### `aggregator.channels`
+
+Ref: [Top Up Channel Information for Aggregator](https://docs.midtrans.com/reference/top-up-channel-information-for-aggregator)
+
+```js
+aggregator
+ .channels()
+ .then((response) => {
+  console.log("Response: ", response);
+ })
+ .catch((error) => {
+  console.error("Error:", error);
+ });
 ```
 
 ---
