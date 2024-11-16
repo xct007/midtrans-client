@@ -4,6 +4,7 @@ An unofficial Midtrans Payment API Client Library for Node.js.
 
 [![npm version](https://img.shields.io/npm/v/@xct007/midtrans-client.svg)](https://www.npmjs.com/package/@xct007/midtrans-client)
 [![license](https://img.shields.io/npm/l/@xct007/midtrans-client.svg)](https://github.com/xct007/midtrans-client/blob/master/LICENSE)
+[![CI Status](https://github.com/xct007/midtrans-client/actions/workflows/nodejs-ci.yml/badge.svg)](https://github.com/xct007/midtrans-client/actions/workflows/nodejs-ci.yml)
 
 ## Installation
 
@@ -27,10 +28,10 @@ import MidtransClient from "@xct007/midtrans-client";
 
 ```javascript
 const { Core, Snap } = new MidtransClient({
-	sandbox: true, // Set to false for production
-	clientKey: "YOUR_CLIENT_KEY",
-	serverKey: "YOUR_SERVER_KEY",
-	throwHttpErrors: true,
+ sandbox: true, // Set to false for production
+ clientKey: "YOUR_CLIENT_KEY",
+ serverKey: "YOUR_SERVER_KEY",
+ throwHttpErrors: true,
 });
 ```
 
@@ -38,39 +39,39 @@ const { Core, Snap } = new MidtransClient({
 
 ```javascript
 Core.charge({
-	payment_type: "bank_transfer",
-	transaction_details: {
-		order_id: "order-id-" + new Date().getTime(),
-		gross_amount: 10000,
-	},
-	bank_transfer: {
-		bank: "bca",
-	},
+ payment_type: "bank_transfer",
+ transaction_details: {
+  order_id: "order-id-" + new Date().getTime(),
+  gross_amount: 10000,
+ },
+ bank_transfer: {
+  bank: "bca",
+ },
 })
-	.then((response) => {
-		console.log("Charge Response:", response);
-	})
-	.catch((error) => {
-		console.error("Charge Error:", error);
-	});
+ .then((response) => {
+  console.log("Charge Response:", response);
+ })
+ .catch((error) => {
+  console.error("Charge Error:", error);
+ });
 ```
 
 ### **Snap API Example**
 
 ```javascript
 Snap.create({
-	transaction_details: {
-		order_id: "order-id-" + new Date().getTime(),
-		gross_amount: 10000,
-	},
+ transaction_details: {
+  order_id: "order-id-" + new Date().getTime(),
+  gross_amount: 10000,
+ },
 })
-	.then((response) => {
-		console.log("Snap Token:", response.token);
-		console.log("Redirect URL:", response.redirect_url);
-	})
-	.catch((error) => {
-		console.error("Snap Error:", error);
-	});
+ .then((response) => {
+  console.log("Snap Token:", response.token);
+  console.log("Redirect URL:", response.redirect_url);
+ })
+ .catch((error) => {
+  console.error("Snap Error:", error);
+ });
 ```
 
 ## Documentation
@@ -89,6 +90,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
--   This library is unofficial and maintained by [xct007](https://github.com/xct007).
--   This library is inspired by the official [Midtrans Node.js Client](https://github.com/midtrans/midtrans-nodejs-client?tab=readme-ov-file#midtrans-client---node-js)
--   Special thanks to [Midtrans](https://midtrans.com) team.
+- This library is unofficial and maintained by [xct007](https://github.com/xct007).
+- This library is inspired by the official [Midtrans Node.js Client](https://github.com/midtrans/midtrans-nodejs-client?tab=readme-ov-file#midtrans-client---node-js)
+- Special thanks to [Midtrans](https://midtrans.com) team.
