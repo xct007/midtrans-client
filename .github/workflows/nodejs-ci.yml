@@ -25,7 +25,7 @@ jobs:
             - name: "Linting"
               run: npm run lint
             - name: "Setup scripts permission"
-              run: chmod +x ./scripts/build
+              run: chmod +x ./scripts/build && chmod +x ./scripts/test
             - name: "Build"
               run: npm run build --if-present
             - name: "Test"
