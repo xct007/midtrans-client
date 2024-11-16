@@ -1,1 +1,5 @@
-export const VERSION = "1.0.0";
+import { readFileSync } from "fs";
+
+const pkg = JSON.parse(readFileSync("../package.json", "utf-8"));
+
+export const VERSION = pkg.version;
