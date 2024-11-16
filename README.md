@@ -27,7 +27,7 @@ import MidtransClient from "@xct007/midtrans-client";
 ### **Initialize the client**
 
 ```javascript
-const { Core, Snap } = new MidtransClient({
+const { Core, Snap, Iris } = new MidtransClient({
  sandbox: true, // Set to false for production
  clientKey: "YOUR_CLIENT_KEY",
  serverKey: "YOUR_SERVER_KEY",
@@ -56,6 +56,8 @@ Core.charge({
  });
 ```
 
+Explore more Core API methods on [examples/core](examples/core).
+
 ### **Snap API Example**
 
 ```javascript
@@ -73,6 +75,23 @@ Snap.create({
   console.error("Snap Error:", error);
  });
 ```
+
+Explore more Snap API methods on [examples/snap](examples/snap).
+
+### **Iris API Example**
+
+```javascript
+Iris.ping()
+ .then((response) => {
+  console.log("Ping Response:", response);
+ })
+ .catch((error) => {
+  console.error("Ping Error:", error);
+ });
+
+```
+
+Explore more Iris API methods on [examples/iris](examples/iris).
 
 ## Documentation
 

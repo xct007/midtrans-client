@@ -6,10 +6,10 @@
 import MidtransClient from "@xct007/midtrans-client";
 
 const { Snap } = new MidtransClient({
-	sandbox: true,
-	clientKey: "CLIENT_KEY",
-	serverKey: "SERVER_KEY",
-	throwHttpErrors: true,
+ sandbox: true,
+ clientKey: "CLIENT_KEY",
+ serverKey: "SERVER_KEY",
+ throwHttpErrors: true,
 });
 ```
 
@@ -21,21 +21,21 @@ ref: [Snap Backend Integration](https://docs.midtrans.com/reference/backend-inte
 
 ```js
 Snap.create({
-	transaction_details: {
-		order_id: "order-id",
-		gross_amount: 10000,
-	},
-	credit_card: {
-		secure: true,
-	},
+ transaction_details: {
+  order_id: "order-id",
+  gross_amount: 10000,
+ },
+ credit_card: {
+  secure: true,
+ },
 })
-	.then((response) => {
-		console.log("Token: ", response.token);
-		console.log("Redirect url: ", response.redirect_url);
-	})
-	.catch((error) => {
-		console.error("Charge Error:", error);
-	});
+ .then((response) => {
+  console.log("Token: ", response.token);
+  console.log("Redirect url: ", response.redirect_url);
+ })
+ .catch((error) => {
+  console.error("Charge Error:", error);
+ });
 ```
 
 ## `Snap.getPreferences`
@@ -47,12 +47,12 @@ ref: [Preference API
 
 ```js
 Snap.getPreferences()
-	.then((response) => {
-		console.log("Response:", response);
-	})
-	.catch((error) => {
-		console.error("Error:", error);
-	});
+ .then((response) => {
+  console.log("Response:", response);
+ })
+ .catch((error) => {
+  console.error("Error:", error);
+ });
 ```
 
 ---

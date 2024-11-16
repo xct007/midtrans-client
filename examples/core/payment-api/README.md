@@ -6,10 +6,10 @@
 import MidtransClient from "@xct007/midtrans-client";
 
 const { Core } = new MidtransClient({
-	sandbox: true,
-	clientKey: "CLIENT_KEY",
-	serverKey: "SERVER_KEY",
-	throwHttpErrors: true,
+ sandbox: true,
+ clientKey: "CLIENT_KEY",
+ serverKey: "SERVER_KEY",
+ throwHttpErrors: true,
 });
 ```
 
@@ -19,21 +19,21 @@ Reference [Charge Transactions](https://docs.midtrans.com/reference/charge-trans
 
 ```js
 Core.charge({
-	payment_type: "bank_transfer",
-	transaction_details: {
-		order_id: "test-order-id",
-		gross_amount: 10000,
-	},
-	bank_transfer: {
-		bank: "bca",
-	},
+ payment_type: "bank_transfer",
+ transaction_details: {
+  order_id: "test-order-id",
+  gross_amount: 10000,
+ },
+ bank_transfer: {
+  bank: "bca",
+ },
 })
-	.then((response) => {
-		console.log("Charge Response:", response);
-	})
-	.catch((error) => {
-		console.error("Charge Error:", error);
-	});
+ .then((response) => {
+  console.log("Charge Response:", response);
+ })
+ .catch((error) => {
+  console.error("Charge Error:", error);
+ });
 ```
 
 ## `capture`
@@ -42,15 +42,15 @@ Reference [Capture Transaction](https://docs.midtrans.com/reference/capture-tran
 
 ```js
 Core.capture({
-	transaction_id: "trx-id",
-	gross_amount: 145000,
+ transaction_id: "trx-id",
+ gross_amount: 145000,
 })
-	.then((response) => {
-		console.log("Response:", response);
-	})
-	.catch((error) => {
-		console.error("Error:", error);
-	});
+ .then((response) => {
+  console.log("Response:", response);
+ })
+ .catch((error) => {
+  console.error("Error:", error);
+ });
 ```
 
 ## `cancel`
@@ -59,12 +59,12 @@ Reference [Cancel Transaction](https://docs.midtrans.com/reference/cancel-transa
 
 ```js
 Core.cancel("trx-id")
-	.then((response) => {
-		console.log("Response:", response);
-	})
-	.catch((error) => {
-		console.error("Error:", error);
-	});
+ .then((response) => {
+  console.log("Response:", response);
+ })
+ .catch((error) => {
+  console.error("Error:", error);
+ });
 ```
 
 ## `status`
@@ -73,12 +73,12 @@ Reference [Get Transaction Status](https://docs.midtrans.com/reference/get-trans
 
 ```js
 Core.status("trx-id")
-	.then((response) => {
-		console.log("Response:", response);
-	})
-	.catch((error) => {
-		console.error("Error:", error);
-	});
+ .then((response) => {
+  console.log("Response:", response);
+ })
+ .catch((error) => {
+  console.error("Error:", error);
+ });
 ```
 
 ## All [`Payment API`](https://docs.midtrans.com/reference/overview-17) Method
@@ -150,7 +150,6 @@ Core.status("trx-id")
 **POST** **/v2/{order_id}/refund**
 
 > Refund transaction is called to reverse the money back to customers for transactions with payment status Settlement.
-
 > If transaction's status is still `Pending` `Authorize` or `Capture` please use Cancel API instead.
 
 **[Reference](https://docs.midtrans.com/reference/refund-transaction)**
@@ -162,7 +161,6 @@ Core.status("trx-id")
 **POST** **/v2/{order_id}/refund/online/direct**
 
 > Direct Refund transaction is triggered to send the refund request directly to the bank or to the third-party payment provider for transaction with payment status Settlement.
-
 > If payment status is still in either Capture, Pending or Authorize, use the Cancel API instead.
 
 **[Reference](https://docs.midtrans.com/reference/direct-refund-transaction)**
@@ -247,54 +245,54 @@ Core.status("trx-id")
 
 **[Reference](https://docs.midtrans.com/reference/bin-api)**
 
-# Subscription API
+## Subscription API
 
 Ref: [Api Method](https://docs.midtrans.com/reference/api-methods-1)
 
-## `create` Subscription
+### `create` Subscription
 
 Reference [Create Subscription Request](https://docs.midtrans.com/reference/create-subscription)
 
 ```js
 const options = {
-	name: "MONTHLY_2019",
-	amount: "14000",
-	currency: "IDR",
-	payment_type: "credit_card",
-	token: "48111111sHfSakAvHvFQFEjTivUV1114",
-	schedule: {
-		interval: 1,
-		interval_unit: "month",
-		max_interval: 12,
-		start_time: "2020-07-22 07:25:01 +0700",
-	},
-	retry_schedule: {
-		interval: 1,
-		interval_unit: "day",
-		max_interval: 3,
-	},
-	metadata: {
-		description: "Recurring payment for A",
-	},
-	customer_details: {
-		first_name: "John",
-		last_name: "Doe",
-		email: "johndoe@email.com",
-		phone: "+62812345678",
-	},
+ name: "MONTHLY_2019",
+ amount: "14000",
+ currency: "IDR",
+ payment_type: "credit_card",
+ token: "48111111sHfSakAvHvFQFEjTivUV1114",
+ schedule: {
+  interval: 1,
+  interval_unit: "month",
+  max_interval: 12,
+  start_time: "2020-07-22 07:25:01 +0700",
+ },
+ retry_schedule: {
+  interval: 1,
+  interval_unit: "day",
+  max_interval: 3,
+ },
+ metadata: {
+  description: "Recurring payment for A",
+ },
+ customer_details: {
+  first_name: "John",
+  last_name: "Doe",
+  email: "johndoe@email.com",
+  phone: "+62812345678",
+ },
 };
 
 Core.subscription
-	.create(options)
-	.then((response) => {
-		console.log(response);
-	})
-	.catch((error) => {
-		console.error(error);
-	});
+ .create(options)
+ .then((response) => {
+  console.log(response);
+ })
+ .catch((error) => {
+  console.error(error);
+ });
 ```
 
-## `Core.subscription` methods
+### `Core.subscription` methods
 
 More information [here](https://docs.midtrans.com/reference/api-methods-1)
 
@@ -358,4 +356,4 @@ More information [here](https://docs.midtrans.com/reference/api-methods-1)
 
 ---
 
-###### Help improve this page
+Help improve this page
