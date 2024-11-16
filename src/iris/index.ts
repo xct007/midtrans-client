@@ -4,6 +4,11 @@ import { Beneficiary } from "./beneficiary";
 import { Facilitator } from "./facilitator";
 import { Payout } from "./payout";
 
+export { IAggregatorChannel } from "./aggregator";
+export { IBeneficiary } from "./beneficiary";
+export { IPayout, IPayoutRsp } from "./payout";
+export { IFacilitator } from "./facilitator";
+
 export const BASEURL = "https://app.midtrans.com";
 export const BASEURL_SANDBOX = "https://app.sandbox.midtrans.com";
 

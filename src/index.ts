@@ -155,5 +155,13 @@ export {
 	SnapReq,
 	SnapRsp,
 } from "./snap";
+export {
+	IAggregatorChannel,
+	IBeneficiary,
+	IFacilitator,
+	IPayout,
+	IPayoutRsp,
+	IValidationBankAccount,
+} from "./iris";
 
 export default MidtransClient;
