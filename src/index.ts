@@ -1,6 +1,7 @@
 import * as Http from "./client";
 import * as Core from "./core";
 import * as Errors from "./error";
+import * as Iris from "./iris";
 import * as Snap from "./snap";
 
 export interface MidtransClientOptions {
@@ -74,16 +75,14 @@ export class MidtransClient extends Http.Client {
 			);
 		}
 
-		const coreApiBaseUrl = sandbox
-			? Core.COREAPI_BASEURL_SANDBOX
-			: Core.COREAPI_BASEURL;
-		const snapApiBaseUrl = sandbox
-			? Snap.SNAP_BASEURL_SANDBOX
-			: Snap.SNAP_BASEURL;
+		const coreApiBaseUrl = sandbox ? Core.BASEURL_SANDBOX : Core.BASEURL;
+		const snapApiBaseUrl = sandbox ? Snap.BASEURL_SANDBOX : Snap.BASEURL;
+		const irisApiBaseUrl = sandbox ? Iris.BASEURL_SANDBOX : Iris.BASEURL;
 
 		super({
 			coreApiBaseUrl,
 			snapApiBaseUrl,
+			irisApiBaseUrl,
 			serverKey,
 			clientKey,
 			throwHttpErrors,
@@ -101,6 +100,12 @@ export class MidtransClient extends Http.Client {
 	 * More infromation see Snap [Backend Integration](https://docs.midtrans.com/reference/backend-integration)
 	 */
 	readonly Snap = new Snap.Api(this);
+	/**
+	 * Midtrans Payout API
+	 *
+	 * More information see Payout [Overview](https://docs.midtrans.com/reference/payout-api-overview)
+	 */
+	readonly Iris = new Iris.Api(this);
 }
 
 const readEnv = (key: string): string | undefined => {
