@@ -184,7 +184,10 @@ export type PaymentLinkCreateRsp = {
 };
 
 export type PaymentLinkGetRsp = Required<
-	Omit<PaymentLinkCreateReq, "expiry" | "title">
+	Omit<
+		PaymentLinkCreateReq,
+		"transaction_details" | "expiry" | "title" | "callbacks"
+	>
 > & {
 	/**
 	 * ID of payment link
@@ -243,13 +246,186 @@ export type PaymentLinkGetRsp = Required<
 	 * List of transactions made using the specified payment link
 	 */
 	purchases: {
+		/**
+		 * Transaction ID
+		 */
 		id: number;
+		/**
+		 * Snap token.
+		 */
 		snap_token: string;
+		/**
+		 * Order ID
+		 */
 		order_id: string;
+		/**
+		 * Payment status
+		 */
 		payment_status: string;
+		/**
+		 * Payment method used
+		 */
 		payment_method: string;
+		/**
+		 * Created at
+		 */
 		created_at: string;
+		/**
+		 * Updated at
+		 */
 		updated_at: string;
+		/**
+		 * Payment link ID
+		 */
 		payment_link_id: number;
 	}[];
+} & Partial<PaymentLinkExtraRsp & PaymentLinkCustomField>;
+
+// Bellow is response from API based on my observation
+// don't know why, some of the field is not documented
+// but it's exist in the response
+export type PaymentLinkExtraRsp = {
+	/**
+	 * Locale amount
+	 */
+	locale_amount: number;
+	/**
+	 * Locale currency. E.g. `Rp.`
+	 */
+	currency_sign: string;
+	/**
+	 * Locale amount with currency sign. E.g. `Rp 0`
+	 */
+	locale_amount_with_prefix: string;
+	/**
+	 * List of card installment terms.
+	 */
+	credit_card_installment_terms: Record<
+		Banks | "offline" | "mandiri" | string,
+		number[]
+	>;
+	/**
+	 * Transaction expiry date.
+	 */
+	expires_at: string;
+	/**
+	 * JSON string of enabled payment methods.
+	 */
+	enabled_payments_raw: string;
+	/**
+	 * Credit card type.
+	 */
+	credit_card_type: string;
+	/**
+	 * Credit card bank.
+	 */
+	credit_card_bank: string;
+	/**
+	 * Credit card installment required.
+	 */
+	credit_card_installment_required: boolean;
+	/**
+	 * Priority card feature.
+	 */
+	priority_card_feature: unknown | null;
+	/**
+	 * JSON string of credit card installment terms.
+	 */
+	credit_card_installment_terms_raw: string;
+	/**
+	 * JSON string of credit card whitelist BINs.
+	 */
+	whitelist_bins_raw: string | null;
+	/**
+	 * Customer details required fields.
+	 */
+	customer_required: boolean;
+	/**
+	 * Customer details required fields.
+	 */
+	customer_address_required: boolean;
+	/**
+	 * Specific customer.
+	 */
+	specific_customer: boolean;
+	/**
+	 * Customer details required fields.
+	 */
+	first_name_required: boolean;
+	/**
+	 * Customer details required fields.
+	 */
+	email_required: boolean;
+	/**
+	 * Customer details required fields.
+	 */
+	phone_required: boolean;
+	/**
+	 * Customer details required fields.
+	 */
+	require_customer_detail_settings: "required" | string;
+	/**
+	 * API Source.
+	 */
+	source: "nexus-api" | string;
+	/**
+	 * API Service.
+	 */
+	service: "snap" | string;
+	/**
+	 * Source version.
+	 */
+	source_version: string;
+	/**
+	 * Finish callback URL.
+	 */
+	finish_callback_url: string;
+	/**
+	 * Unfinish callback URL.
+	 */
+	unfinish_callback_url: string | null;
+	/**
+	 * Error callback URL.
+	 */
+	error_callback_url: string | null;
+	/**
+	 * Close callback URL.
+	 */
+	close_callback_url: string | null;
+	/**
+	 * Transaction created at.
+	 */
+	created_at: string;
+	/**
+	 * Transaction created at.
+	 */
+	createdAt: string;
+	/**
+	 * Transaction updated at.
+	 */
+	update_at: string;
+	/**
+	 * Transaction updated at.
+	 */
+	updatedAt: string;
+	/**
+	 * Transaction deleted at.
+	 */
+	delete_at: string | null;
+	/**
+	 * Transaction deleted at.
+	 */
+	deletedAt: string | null;
+	/**
+	 * Transaction canceled at.
+	 */
+	canceled_at: string | null;
+	/**
+	 * Transaction epoch deleted at.
+	 */
+	epoch_deleted_at: number;
+	/**
+	 * Any additional payment settings.
+	 */
+	payment_settings: Record<string, unknown> | null;
 };
