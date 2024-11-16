@@ -3,23 +3,24 @@ import { HttpClientError, HttpStatusError } from "./error";
 import { VERSION } from "./version";
 
 type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
-// TODO
-type Headers = {
+// TODO: headers for payouts/BI-SNAP API
+// https://docs.midtrans.com/reference/https-header
+// https://docs.midtrans.com/reference/core-api-snap-open-api-overview
+type RequestHeaders = {
+	Authorization?: string;
 	"Idempotency-Key"?: string;
 	"X-Payment-Locale"?: "en-EN" | "id-ID";
 } & Record<string, string>;
 
 interface RequestOptions {
 	method: HttpMethod;
-	headers: Headers;
+	headers: RequestHeaders;
 }
 
 interface HttpOptions {
 	baseUrl: string;
-	auth?: {
-		clientKey?: string;
-		serverKey?: string;
-	};
+	clientKey?: string;
+	serverKey?: string;
 	throwHttpErrors?: boolean;
 }
 
@@ -28,43 +29,56 @@ export class Http {
 	protected readonly _authHeader: string | undefined;
 	private readonly throwHttpErrors: boolean | undefined;
 
+	/**
+	 * Some of API endpoints require client key
+	 * so we need to store it here
+	 *
+	 * Ref: https://docs.midtrans.com/reference/get-token
+	 */
 	clientKey: string | undefined;
 
 	/**
-	 * Ref: https://docs.midtrans.com/reference/https-request-1
-	 *
 	 * Maximum allowed size of HTTP(S) request is 16KB.
+	 *
+	 *
+	 * Ref: https://docs.midtrans.com/reference/https-request-1
 	 */
 	private readonly MAX_REQUEST_SIZE = 16 * 1024;
 
-	constructor({ baseUrl, auth, throwHttpErrors }: HttpOptions) {
+	constructor({
+		baseUrl,
+		clientKey,
+		serverKey,
+		throwHttpErrors,
+	}: HttpOptions) {
 		this.baseUrl = baseUrl;
 		this.throwHttpErrors = throwHttpErrors ?? false;
 
 		// Bypass password because midtrans authentication doesn't require password
-		if (auth?.serverKey) {
-			this._authHeader = `Basic ${Buffer.from(`${auth.serverKey}:`).toString("base64")}`;
+		if (serverKey) {
+			this._authHeader = `Basic ${Buffer.from(`${serverKey}:`).toString("base64")}`;
 		}
 
-		this.clientKey = auth?.clientKey || "";
+		this.clientKey = clientKey || "";
 	}
 
 	/**
 	 * Build headers, add custom headers here
-	 * @returns {Headers}
+	 * @param {RequestHeaders} headers
+	 * @returns {RequestHeaders}
 	 */
-	buildHeaders(): Headers {
-		const headers: Headers = {
+	buildHeaders(headers?: RequestHeaders): RequestHeaders {
+		const defaultHeaders: RequestHeaders = {
 			"Content-Type": "application/json",
 			Accept: "application/json",
-			"User-Agent": `Midtrans-Client/${VERSION}`,
+			"User-Agent": `Midtrans-Client/${VERSION} (https://github.com/xct007/midtrans-client)`,
 		};
 
 		if (this._authHeader) {
-			headers["Authorization"] = this._authHeader;
+			defaultHeaders.Authorization = this._authHeader;
 		}
 
-		return headers;
+		return { ...defaultHeaders, ...headers };
 	}
 
 	/**
@@ -82,10 +96,14 @@ export class Http {
 	async makeRequest<T>(
 		method: HttpMethod,
 		url: string,
-		data?: unknown
+		data?: unknown,
+		headers?: RequestHeaders
 	): Promise<T> {
-		const headers = this.buildHeaders();
-		const options: RequestOptions = { method, headers };
+		// const headers = this.buildHeaders();
+		const options: RequestOptions = {
+			method,
+			headers: this.buildHeaders(headers),
+		};
 
 		return new Promise<T>((resolve, reject) => {
 			const req = https.request(this.buildUrl(url), options, (res) => {
@@ -157,23 +175,40 @@ export class Http {
 		return searchParams.toString();
 	}
 
-	public async get<T>(url: string, params?: unknown): Promise<T> {
+	public async get<T>(
+		url: string,
+		params?: unknown,
+		headers?: Headers
+	): Promise<T> {
 		return this.makeRequest(
 			"GET",
-			`${url}${params ? "?" + this._buildParams(params) : ""}`
+			`${url}${params ? "?" + this._buildParams(params) : ""}`,
+			headers
 		);
 	}
 
-	public async post<T>(url: string, data?: unknown): Promise<T> {
-		return this.makeRequest("POST", url, data);
+	public async post<T>(
+		url: string,
+		data?: unknown,
+		headers?: RequestHeaders
+	): Promise<T> {
+		return this.makeRequest("POST", url, data, headers);
 	}
 
-	public async patch<T>(url: string, data?: unknown): Promise<T> {
-		return this.makeRequest("PATCH", url, data);
+	public async patch<T>(
+		url: string,
+		data?: unknown,
+		headers?: RequestHeaders
+	): Promise<T> {
+		return this.makeRequest("PATCH", url, data, headers);
 	}
 
-	public async delete<T>(url: string, data?: unknown): Promise<T> {
-		return this.makeRequest("DELETE", url, data);
+	public async delete<T>(
+		url: string,
+		data?: unknown,
+		headers?: RequestHeaders
+	): Promise<T> {
+		return this.makeRequest("DELETE", url, data, headers);
 	}
 }
 
@@ -203,7 +238,8 @@ export class Client {
 		throwHttpErrors,
 	}: ClientOptions) {
 		const options: Partial<HttpOptions> = {
-			auth: { clientKey, serverKey },
+			clientKey,
+			serverKey,
 			throwHttpErrors,
 		};
 		this._core = new Http({
