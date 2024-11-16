@@ -11,12 +11,7 @@
 		"allowSyntheticDefaultImports": true,
 		"declaration": true,
 		"sourceMap": true,
-		"strict": true,
-
-		"baseUrl": "./",
-		"paths": {
-			"@/*": ["src/*"]
-		}
+		"strict": true
 	},
 	"include": ["src/**/*"],
 	"exclude": ["node_modules", "dist"]
