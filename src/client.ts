@@ -78,7 +78,7 @@ export class Http {
 			"Content-Type": "application/json",
 			Accept: "application/json",
 			"User-Agent":
-				"Midtrans-Client/(https://github.com/xct007/midtrans-client)",
+				"Midtrans-Client/1.1 +https://github.com/xct007/midtrans-client",
 			...(this.useIdempotencyKey
 				? { "Idempotency-Key": this.buildIdempotencyKey() }
 				: {}),
