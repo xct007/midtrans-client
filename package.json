@@ -8,10 +8,10 @@
 		"node": ">=18"
 	},
 	"scripts": {
-		"build": "./scripts/build",
+		"build": "sh ./scripts/build",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
-		"test": "./scripts/test",
+		"test": "sh ./scripts/test",
 		"prepublishOnly": "exit 0"
 	},
 	"repository": {
