@@ -160,33 +160,39 @@ export type InvoiceBaseReq = {
 	};
 };
 
-export type InvoicePaymentLinkBase = {
-	is_custom_expiry: boolean;
+type Expiry = {
 	/**
-	 * Custom expiry for payment link.
+	 * Expiry unit for payment link.
 	 */
-	expiry: {
-		/**
-		 * Expiry unit for payment link.
-		 */
-		unit: "day" | "month" | "year" | null;
-		/**
-		 * Expiry duration for payment link.
-		 */
-		duration: number | null;
-		/**
-		 * Expiry start time for payment link.
-		 */
-		start_time?: string | null;
-	};
+	unit: "day" | "month" | "year" | null;
+	/**
+	 * Expiry duration for payment link.
+	 */
+	duration: number | null;
+	/**
+	 * Expiry start time for payment link.
+	 */
+	start_time?: string | null;
 };
+
+export type InvoicePaymentLinkBase =
+	| {
+			is_custom_expiry?: boolean;
+	  }
+	| {
+			is_custom_expiry: true;
+			/**
+			 * Custom expiry for payment link.
+			 */
+			expiry: Expiry;
+	  };
 export type InvoicePaymentLink = InvoicePaymentLinkBase & {
 	/**
 	 * Payment methods that will be used in payment link.
 	 *
 	 * Ref: https://docs.midtrans.com/reference/json-objects-1#payment-link
 	 */
-	enabled_payments: PaymentChannelName[];
+	enabled_payments: (PaymentChannelName | "other_qris" | "bank_transfer")[];
 } & PaymentLinkCustomField<{ number: string }>;
 
 export type InvoiceVirtualAccount = {
