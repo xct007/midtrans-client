@@ -79,6 +79,6 @@
 		"typescript-eslint": "^8.11.0"
 	},
 	"dependencies": {
-		"undici": "^6.21.2"
+		"undici": "^6.21.3"
 	}
 }
