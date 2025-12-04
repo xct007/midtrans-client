@@ -4,24 +4,34 @@ import { MidtransError } from "./error";
 
 type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
 
-type RequestHeaders = {
-	Authorization?: string;
-	"Idempotency-Key"?: string;
-	"X-Payment-Locale"?: "en-EN" | "id-ID";
-} & Record<string, string>;
+export type OverrideNotificationHeaders = {
+	/** Add new notification URLs alongside the settings on dashboard */
+	"X-Append-Notification"?: string;
+	/** Use new notification URLs disregarding the settings on dashboard */
+	"X-Override-Notification"?: string;
+};
 
-interface RequestOptions {
+export type RequestHeaders = {
+	/** Idempotency key for ensuring unique requests */
+	"Idempotency-Key"?: string;
+	/** Payment locale for notification */
+	"X-Payment-Locale"?: "en-EN" | "id-ID";
+} & OverrideNotificationHeaders &
+	Record<string, string>;
+
+export interface RequestOptions {
 	method: HttpMethod;
 	headers: RequestHeaders;
 	body?: string;
 }
 
-interface HttpOptions {
+export interface HttpOptions {
 	baseUrl: string;
 	clientKey?: string;
 	serverKey?: string;
 	throwHttpErrors?: boolean;
 	useIdempotencyKey?: boolean;
+	fetch?: typeof fetch;
 }
 
 export class Http {
@@ -54,6 +64,7 @@ export class Http {
 		serverKey,
 		throwHttpErrors,
 		useIdempotencyKey,
+		fetch: _fetch = fetch,
 	}: HttpOptions) {
 		this.baseUrl = baseUrl;
 		this.throwHttpErrors = throwHttpErrors ?? false;
@@ -63,7 +74,7 @@ export class Http {
 		}
 		this.clientKey = clientKey || "";
 		this.useIdempotencyKey = useIdempotencyKey ?? false;
-		this.fetch = fetch;
+		this.fetch = _fetch;
 	}
 
 	private buildIdempotencyKey(): string {
@@ -199,7 +210,7 @@ export class Http {
 		headers?: RequestHeaders
 	): Promise<T> {
 		const queryString = params ? `?${this._buildParams(params)}` : "";
-		return this.makeRequest(
+		return this.makeRequest<T>(
 			"GET",
 			`${url}${queryString}`,
 			undefined,
@@ -212,7 +223,7 @@ export class Http {
 		data?: unknown,
 		headers?: RequestHeaders
 	): Promise<T> {
-		return this.makeRequest("POST", url, data, headers);
+		return this.makeRequest<T>("POST", url, data, headers);
 	}
 
 	public async patch<T>(
@@ -220,7 +231,7 @@ export class Http {
 		data?: unknown,
 		headers?: RequestHeaders
 	): Promise<T> {
-		return this.makeRequest("PATCH", url, data, headers);
+		return this.makeRequest<T>("PATCH", url, data, headers);
 	}
 
 	public async delete<T>(
@@ -228,7 +239,7 @@ export class Http {
 		data?: unknown,
 		headers?: RequestHeaders
 	): Promise<T> {
-		return this.makeRequest("DELETE", url, data, headers);
+		return this.makeRequest<T>("DELETE", url, data, headers);
 	}
 }
 

@@ -112,7 +112,7 @@ const readEnv = (key: string): string | undefined => {
 	return process.env[key] ?? undefined;
 };
 
-export {
+export type {
 	BankTransferChannel,
 	PaymentChannelName,
 	CustomerDetails,
@@ -124,7 +124,7 @@ export {
 	RegisterCardReq,
 	RegisterCardRsp,
 } from "./resource";
-export {
+export type {
 	CoreBaseRsp,
 	TokenizeReq,
 	DirectRefundReq,
@@ -148,14 +148,14 @@ export {
 	InvoiceStatus,
 	InvoiceVirtualAccount,
 } from "./core";
-export {
+export type {
 	SnapReqBase,
 	SnapBank,
 	SnapCreditCardReq,
 	SnapReq,
 	SnapRsp,
 } from "./snap";
-export {
+export type {
 	IAggregatorChannel,
 	IBeneficiary,
 	IFacilitator,

@@ -1,3 +1,4 @@
+import type { RequestHeaders } from "../client";
 import MidtransClient from "../index";
 
 export class Beneficiary {
@@ -11,10 +12,14 @@ export class Beneficiary {
 	 *
 	 * Ref: https://docs.midtrans.com/reference/create-beneficiaries
 	 */
-	create(data: IBeneficiary): Promise<{ status: string | "created" }> {
+	create(
+		data: IBeneficiary,
+		headers?: RequestHeaders
+	): Promise<{ status: string | "created" }> {
 		return this._client._iris.post(
 			`/iris/api/${this._client.Iris.apiVersion}/beneficiaries`,
-			data
+			data,
+			headers
 		);
 	}
 	/**

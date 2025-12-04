@@ -1,4 +1,4 @@
-import {
+import type {
 	ActionRsp,
 	CaptureReq,
 	ChargeReq,
@@ -143,10 +143,13 @@ export class Api extends Shared {
 			transactions: (T & MidtransRspBase)[];
 		}
 	> {
-		return this._client._core.get(this._buildUrl(`/${order_id}/status`), {
-			page: opts.page.toString(),
-			per_page: opts.per_page.toString(),
-		});
+		return this._client._core.get(
+			this._buildUrl(`/${order_id}/status/b2b`),
+			{
+				page: opts.page.toString(),
+				per_page: opts.per_page.toString(),
+			}
+		);
 	}
 	/**
 	 * Register customer's card information (card number and expiry) to be used for One Click and Two Click transactions.
@@ -158,7 +161,9 @@ export class Api extends Shared {
 		} as unknown as Record<string, string>);
 	}
 	/**
-	 * Get the point balance of the card in denomination amount.
+	 * Point Inquiry (Card Payments)
+	 *
+	 * Get balance information on customer's card points.
 	 */
 	pointInquiry(
 		token_id: string,
@@ -170,7 +175,7 @@ export class Api extends Shared {
 		}
 	> {
 		return this._client._core.get(
-			this._buildUrl(`/card/register/${token_id}`),
+			this._buildUrl(`/point_inquiry/${token_id}`),
 			{
 				gross_amount,
 			}
@@ -419,7 +424,7 @@ export type GetGoPayAccountRsp = GoPayAccountBaseRsp & {
 	};
 };
 
-export {
+export type {
 	SubsReq,
 	SubsPaymentType,
 	SubsReqBase,
@@ -428,7 +433,7 @@ export {
 	SubsRsp,
 } from "./subscription";
 
-export {
+export type {
 	PaymentLinkCreateReq,
 	PaymentLinkCreateRsp,
 	PaymentLinkCreditCard,
@@ -436,7 +441,7 @@ export {
 	PaymentLinkGetRsp,
 } from "./payment-link";
 
-export {
+export type {
 	InvoiceBaseReq,
 	InvoicePaymentLinkBase,
 	InvoicePaymentLink,

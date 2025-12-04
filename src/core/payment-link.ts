@@ -1,5 +1,5 @@
 import MidtransClient from "../index";
-import {
+import type {
 	BankTransferBase,
 	Banks,
 	CustomField,

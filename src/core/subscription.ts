@@ -1,4 +1,5 @@
-import MidtransClient, { CustomerDetails } from "../index";
+import MidtransClient from "../index";
+import type { CustomerDetails } from "../resource";
 
 /**
  * Representing Subscription API
