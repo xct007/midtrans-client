@@ -1,6 +1,6 @@
 import MidtransClient from "../index";
-import { BankTransferChannel, PaymentChannelName } from "../resource";
-import { PaymentLinkCustomField } from "./payment-link";
+import type { BankTransferChannel, PaymentChannelName } from "../resource";
+import type { PaymentLinkCustomField } from "./payment-link";
 
 /**
  * Representing Invoices API

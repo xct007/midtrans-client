@@ -1,3 +1,4 @@
+import type { RequestHeaders } from "../client";
 import {
 	Banks,
 	CustomField,
@@ -25,8 +26,8 @@ export class Api extends Shared {
 	/**
 	 * Create new snap transaction.
 	 */
-	create(body: SnapReq): Promise<SnapRsp> {
-		return this._client._snap.post("/snap/v1/transactions", body);
+	create(body: SnapReq, headers?: RequestHeaders): Promise<SnapRsp> {
+		return this._client._snap.post("/snap/v1/transactions", body, headers);
 	}
 }
 

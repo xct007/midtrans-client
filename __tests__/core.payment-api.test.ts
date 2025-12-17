@@ -76,7 +76,7 @@ describe("Core API (Payment API)", () => {
 		});
 		// because we are using sandbox and fake phone number
 		// the response will be failed
-		expect(response.status_code).toBe("202");
+		expect(response.status_code).toBe("201");
 		expect(response.payment_type).toBe("gopay");
 	});
 

@@ -28,7 +28,7 @@ export class Facilitator {
 	 */
 	lists(): Promise<IFacilitator[]> {
 		return this._client._iris.get(
-			`/iris/api/${this._client.Iris.apiVersion}/beneficiaries`
+			`/iris/api/${this._client.Iris.apiVersion}/bank_accounts`
 		);
 	}
 }

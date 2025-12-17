@@ -1,9 +1,10 @@
 {
 	"name": "@xct007/midtrans-client",
-	"version": "0.0.3",
+	"version": "1.0.0",
 	"description": "Unofficial Midtrans Payment API Client Library",
-	"main": "./dist/index.js",
-	"types": "./dist/index.d.ts",
+	"main": "dist/index.js",
+	"module": "dist/index.mjs",
+	"types": "dist/index.d.ts",
 	"engines": {
 		"node": ">=18"
 	},
@@ -12,6 +13,8 @@
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"test": "sh ./scripts/test",
+		"typecheck": "tsc --noEmit",
+		"prepare": "npm run build",
 		"prepublishOnly": "exit 0"
 	},
 	"repository": {
@@ -37,35 +40,22 @@
 	},
 	"exports": {
 		".": {
-			"require": {
-				"types": "./dist/index.d.ts",
-				"default": "./dist/index.js"
-			},
 			"types": "./dist/index.d.ts",
-			"default": "./dist/index.mjs"
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.js"
 		},
-		"./*.mjs": {
-			"types": "./dist/*.d.ts",
-			"default": "./dist/*.mjs"
-		},
-		"./*.js": {
-			"types": "./dist/*.d.ts",
-			"default": "./dist/*.js"
-		},
-		"./*": {
-			"types": "./dist/*.d.ts",
-			"require": "./dist/*.js",
-			"default": "./dist/*.mjs"
-		}
+		"./package.json": "./package.json"
 	},
 	"homepage": "https://github.com/xct007/midtrans-client#readme",
 	"devDependencies": {
 		"@babel/preset-typescript": "^7.25.9",
+		"@microsoft/api-extractor": "^7.55.1",
 		"@swc/jest": "^0.2.36",
 		"@trivago/prettier-plugin-sort-imports": "^4.3.0",
 		"@types/jest": "^29.5.14",
 		"@types/node": "^22.7.9",
 		"dotenv": "^16.4.5",
+		"esbuild-plugin-file-path-extensions": "^2.1.4",
 		"eslint": "^9.13.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-prettier": "^5.2.1",
@@ -74,7 +64,7 @@
 		"prettier": "^3.3.3",
 		"ts-jest": "^29.2.5",
 		"ts-node": "^10.9.2",
-		"tsc-multi": "^1.1.0",
+		"tsup": "^8.5.1",
 		"typescript": "^5.6.3",
 		"typescript-eslint": "^8.11.0"
 	},

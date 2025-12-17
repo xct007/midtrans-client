@@ -4,11 +4,9 @@ set -e -o pipefail
 
 cd "$(dirname "$0")/.."
 
-rm -rf dist; mkdir dist
+rm -rf dist/*
 
-npm exec tsc-multi
-
-cp dist/index.d.ts dist/index.d.mts
+npm exec tsup
 
 (cd dist && node -e 'require("@xct007/midtrans-client")')
 (cd dist && node -e 'import("@xct007/midtrans-client")' --input-type=module)

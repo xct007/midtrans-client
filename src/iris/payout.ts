@@ -1,3 +1,4 @@
+import type { RequestHeaders } from "../client";
 import MidtransClient from "../index";
 
 export class Payout {
@@ -13,7 +14,10 @@ export class Payout {
 	 *
 	 * Ref: https://docs.midtrans.com/reference/create-payout
 	 */
-	create(body: { payouts: IPayout[] }): Promise<{
+	create(
+		body: { payouts: IPayout[] },
+		headers?: RequestHeaders
+	): Promise<{
 		payouts: {
 			/**
 			 * Payment status.
@@ -27,7 +31,8 @@ export class Payout {
 	}> {
 		return this._client._iris.post(
 			`/iris/api/${this._client.Iris.apiVersion}/payouts`,
-			body
+			body,
+			headers
 		);
 	}
 	/**
@@ -35,21 +40,25 @@ export class Payout {
 	 *
 	 * Ref: https://docs.midtrans.com/reference/accept-payout
 	 */
-	approve(body: {
-		/**
-		 * Unique IDs to identify the payouts
-		 */
-		reference_nos: string[];
-		/**
-		 * Google auth OTP (QR Code will be sent to approver's email during partner registration)
-		 *
-		 * `optional` `(based on config)`
-		 */
-		otp?: string;
-	}): Promise<{ status: string | "ok" }> {
+	approve(
+		body: {
+			/**
+			 * Unique IDs to identify the payouts
+			 */
+			reference_nos: string[];
+			/**
+			 * Google auth OTP (QR Code will be sent to approver's email during partner registration)
+			 *
+			 * `optional` `(based on config)`
+			 */
+			otp?: string;
+		},
+		headers?: RequestHeaders
+	): Promise<{ status: string | "ok" }> {
 		return this._client._iris.patch(
 			`/iris/api/${this._client.Iris.apiVersion}/payouts/approve`,
-			body
+			body,
+			headers
 		);
 	}
 	/**
@@ -57,19 +66,23 @@ export class Payout {
 	 *
 	 * Ref: https://docs.midtrans.com/reference/reject-payout
 	 */
-	reject(body: {
-		/**
-		 * Unique IDs to identify the payouts
-		 */
-		reference_nos: string[];
-		/**
-		 * Reason to reject the payouts
-		 */
-		reject_reason: string;
-	}): Promise<{ status: string | "ok" }> {
+	reject(
+		body: {
+			/**
+			 * Unique IDs to identify the payouts
+			 */
+			reference_nos: string[];
+			/**
+			 * Reason to reject the payouts
+			 */
+			reject_reason: string;
+		},
+		headers?: RequestHeaders
+	): Promise<{ status: string | "ok" }> {
 		return this._client._iris.patch(
 			`/iris/api/${this._client.Iris.apiVersion}/payouts/reject`,
-			body
+			body,
+			headers
 		);
 	}
 	/**

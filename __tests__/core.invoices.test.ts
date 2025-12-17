@@ -58,10 +58,6 @@ describe("Core API (Invoices)", () => {
 				},
 				enabled_payments: ["credit_card", "bca_va", "echannel"],
 				is_custom_expiry: false,
-				expiry: {
-					duration: 5,
-					unit: "day",
-				},
 			},
 		});
 		expect(response.id).toBeDefined();

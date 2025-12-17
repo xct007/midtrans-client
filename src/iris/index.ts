@@ -4,10 +4,10 @@ import { Beneficiary } from "./beneficiary";
 import { Facilitator } from "./facilitator";
 import { Payout } from "./payout";
 
-export { IAggregatorChannel } from "./aggregator";
-export { IBeneficiary } from "./beneficiary";
-export { IPayout, IPayoutRsp } from "./payout";
-export { IFacilitator } from "./facilitator";
+export type { IAggregatorChannel } from "./aggregator";
+export type { IBeneficiary } from "./beneficiary";
+export type { IPayout, IPayoutRsp } from "./payout";
+export type { IFacilitator } from "./facilitator";
 
 export const BASEURL = "https://app.midtrans.com";
 export const BASEURL_SANDBOX = "https://app.sandbox.midtrans.com";
@@ -32,9 +32,7 @@ export class Api extends Shared {
 	}): Promise<IValidationBankAccount> {
 		return this._client._iris.get(
 			`/iris/api/${this.apiVersion}/account_validation`,
-			{
-				params: body,
-			}
+			body
 		);
 	}
 	/**
