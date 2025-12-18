@@ -13,9 +13,7 @@
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"test": "sh ./scripts/test",
-		"typecheck": "tsc --noEmit",
-		"prepare": "npm run build",
-		"prepublishOnly": "exit 0"
+		"typecheck": "tsc --noEmit"
 	},
 	"repository": {
 		"type": "git",
