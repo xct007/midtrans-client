@@ -2,7 +2,7 @@ import { esbuildPluginFilePathExtensions } from "esbuild-plugin-file-path-extens
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-	entry: ["src/**/*.ts"],
+	entry: ["src", "!src/resource.ts"],
 	treeshake: true,
 	keepNames: true,
 	splitting: false,
