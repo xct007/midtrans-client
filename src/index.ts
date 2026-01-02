@@ -4,7 +4,7 @@ import * as Errors from "./error";
 import * as Iris from "./iris";
 import * as Snap from "./snap";
 
-export interface MidtransClientOptions {
+export interface MidtransClientOptions extends Partial<Http.ClientOptions> {
 	/**
 	 * Sandbox mode. Midtrans sandbox API
 	 *
@@ -48,15 +48,21 @@ export interface MidtransClientOptions {
 	 * default: `false`
 	 */
 	throwHttpErrors?: boolean;
+	/**
+	 * Additional headers to be sent with each request
+	 */
+	headers?: Http.RequestHeaders;
 }
 
 export class MidtransClient extends Http.Client {
-	constructor({
-		sandbox = true,
-		clientKey: _clientKey,
-		serverKey: _serverKey,
-		throwHttpErrors,
-	}: MidtransClientOptions) {
+	constructor(options: MidtransClientOptions) {
+		const {
+			sandbox = true,
+			clientKey: _clientKey,
+			serverKey: _serverKey,
+			throwHttpErrors,
+			...rest
+		} = options;
 		const isSandbox = readEnv("MIDTRANS_SANDBOX") === "true" || sandbox;
 
 		const clientKey =
@@ -86,6 +92,7 @@ export class MidtransClient extends Http.Client {
 			serverKey,
 			clientKey,
 			throwHttpErrors,
+			...rest,
 		});
 	}
 	/**

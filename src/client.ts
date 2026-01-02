@@ -1,13 +1,20 @@
 import { randomBytes } from "crypto";
-import { fetch, setGlobalOrigin } from "undici";
+import { fetch } from "undici";
 import { MidtransError } from "./error";
 
 type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
 
-export type OverrideNotificationHeaders = {
-	/** Add new notification URLs alongside the settings on dashboard */
+export type NotificationHeaders = {
+	/**
+	 * Add new notification URLs alongside the settings on dashboard
+	 *
+	 * Maximum of 3 URLs, separated by coma (`,`). */
 	"X-Append-Notification"?: string;
-	/** Use new notification URLs disregarding the settings on dashboard */
+	/**
+	 * Use new notification URLs disregarding the settings on dashboard
+	 *
+	 * Maximum of 3 URLs, separated by coma (`,`).
+	 */
 	"X-Override-Notification"?: string;
 };
 
@@ -16,7 +23,7 @@ export type RequestHeaders = {
 	"Idempotency-Key"?: string;
 	/** Payment locale for notification */
 	"X-Payment-Locale"?: "en-EN" | "id-ID";
-} & OverrideNotificationHeaders &
+} & NotificationHeaders &
 	Record<string, string>;
 
 export interface RequestOptions {
@@ -27,10 +34,11 @@ export interface RequestOptions {
 
 export interface HttpOptions {
 	baseUrl: string;
-	clientKey?: string;
-	serverKey?: string;
+	clientKey: string;
+	serverKey: string;
 	throwHttpErrors?: boolean;
 	useIdempotencyKey?: boolean;
+	headers?: RequestHeaders;
 	fetch?: typeof fetch;
 }
 
@@ -39,6 +47,7 @@ export class Http {
 	private readonly throwHttpErrors: boolean | undefined;
 	protected readonly _authHeader: string | undefined;
 	protected readonly fetch: typeof fetch;
+	protected readonly _headers: RequestHeaders = {};
 
 	private useIdempotencyKey: boolean | undefined;
 
@@ -65,16 +74,18 @@ export class Http {
 		throwHttpErrors,
 		useIdempotencyKey,
 		fetch: _fetch = fetch,
+		headers,
 	}: HttpOptions) {
-		this.baseUrl = baseUrl;
+		this.baseUrl = new URL(baseUrl).origin;
 		this.throwHttpErrors = throwHttpErrors ?? false;
 
 		if (serverKey) {
 			this._authHeader = `Basic ${Buffer.from(`${serverKey}:`).toString("base64")}`;
 		}
-		this.clientKey = clientKey || "";
+		this.clientKey = clientKey;
 		this.useIdempotencyKey = useIdempotencyKey ?? false;
 		this.fetch = _fetch;
+		this._headers = headers || {};
 	}
 
 	private buildIdempotencyKey(): string {
@@ -99,13 +110,14 @@ export class Http {
 			defaultHeaders.Authorization = this._authHeader;
 		}
 
-		return { ...defaultHeaders, ...headers };
+		return { ...defaultHeaders, ...this._headers, ...headers };
 	}
 
 	sanitizePath(path: string): string {
-		// explicitly set global origin
-		setGlobalOrigin(new URL(this.baseUrl).origin);
 		return path.startsWith("/") ? path : `/${path}`;
+	}
+	buildUrl(path: string): string {
+		return `${this.baseUrl}${path.startsWith("/") ? path : `/${path}`}`;
 	}
 
 	async makeRequest<T>(
@@ -128,7 +140,7 @@ export class Http {
 		}
 
 		try {
-			const response = await this.fetch(this.sanitizePath(url), options);
+			const response = await this.fetch(this.buildUrl(url), options);
 			const rawData = await response.text();
 			const contentType = response.headers.get("content-type") as
 				| string
@@ -243,13 +255,10 @@ export class Http {
 	}
 }
 
-export interface ClientOptions {
+export interface ClientOptions extends Omit<HttpOptions, "baseUrl"> {
 	coreApiBaseUrl: string;
 	snapApiBaseUrl: string;
 	irisApiBaseUrl: string;
-	clientKey: string;
-	serverKey: string;
-	throwHttpErrors?: boolean;
 }
 
 export class Client {
@@ -273,23 +282,25 @@ export class Client {
 		clientKey,
 		serverKey,
 		throwHttpErrors,
+		...rest
 	}: ClientOptions) {
-		const options: Partial<HttpOptions> = {
+		const options = {
 			clientKey,
 			serverKey,
 			throwHttpErrors,
+			...rest,
 		};
 		this._core = new Http({
-			baseUrl: coreApiBaseUrl,
 			...options,
+			baseUrl: coreApiBaseUrl,
 		});
 		this._snap = new Http({
-			baseUrl: snapApiBaseUrl,
 			...options,
+			baseUrl: snapApiBaseUrl,
 		});
 		this._iris = new Http({
-			baseUrl: irisApiBaseUrl,
 			...options,
+			baseUrl: irisApiBaseUrl,
 			useIdempotencyKey: true,
 		});
 	}
