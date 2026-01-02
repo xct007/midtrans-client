@@ -1,3 +1,4 @@
+import type { RequestHeaders } from "../src/client";
 import * as Core from "../src/core";
 import MidtransClient, { MidtransClientOptions } from "../src/index";
 import * as Iris from "../src/iris";
@@ -62,5 +63,36 @@ describe("MidtransClient", () => {
 		expect(() => new MidtransClient(options)).toThrow(
 			"Midtrans server and client key is required"
 		);
+	});
+
+	// test custom headers
+	it("should include custom headers in requests", async () => {
+		mockEnv(true, "sandbox-server-key");
+
+		const customHeaders: RequestHeaders = {
+			"X-Append-Notification": "https://example.com/notify",
+			"X-Override-Notification": "https://example.com/override",
+			"X-Custom-Header": "CustomValue",
+		};
+		const fetchMock = jest.fn().mockResolvedValue({
+			ok: true,
+			json: async () => ({}),
+			text: async () => "{}",
+			headers: new Map([["content-type", "application/json"]]),
+			status: 200,
+		});
+
+		const client = new MidtransClient({
+			sandbox: true,
+			headers: customHeaders,
+			fetch: fetchMock,
+		});
+
+		await client.Core.status("x"); // Replace with an actual method
+
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		const fetchCallArgs = fetchMock.mock.calls[0];
+		const requestInit = fetchCallArgs[1];
+		expect(requestInit?.headers).toMatchObject(customHeaders);
 	});
 });
