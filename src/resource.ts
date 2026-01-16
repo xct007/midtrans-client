@@ -1,5 +1,5 @@
 export type Banks = "permata" | "bca" | "bni" | "bri" | "cimb";
-export type EWallet = "qris" | "gopay" | "shopeepay";
+export type EWallet = "qris" | "gopay" | "shopeepay" | "dana";
 export type Otc = "alfamart" | "indomaret";
 export type Cardless = "akulaku" | "kredivo";
 export type Payments = Banks | EWallet | Otc | Cardless;
@@ -47,12 +47,18 @@ export type TransactionStatus =
 
 export type FraudStatus = "accept" | "deny" | "challenge";
 
-export type ExpiryUnit =
-	| "second"
-	| "minute"
-	| "hour"
-	| "day"
-	| `${"second" | "minute" | "hour" | "day"}s`;
+export type ExpiryUnit = "second" | "minute" | "hour" | "day";
+
+export type Callback = {
+	/**
+	 * Redirect URL after transaction is successfully paid.
+	 */
+	finish: string;
+	/**
+	 * Redirect URL after transaction failed to be paid by customer.
+	 */
+	error: string;
+} & Record<string, string>;
 
 export interface MidtransRspBase {
 	status_code: string;

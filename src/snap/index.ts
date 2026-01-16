@@ -1,6 +1,7 @@
 import type { RequestHeaders } from "../client";
 import {
 	Banks,
+	Callback,
 	CustomField,
 	ExpiryUnit,
 	GoPayReq,
@@ -31,8 +32,10 @@ export class Api extends Shared {
 	}
 }
 
-export interface SnapReqBase
-	extends Omit<ReqBase & CustomField, "custom_expiry" | "payment_type"> {
+export interface SnapReqBase extends Omit<
+	ReqBase & CustomField,
+	"custom_expiry" | "payment_type"
+> {
 	credit_card?: Partial<SnapCreditCardReq>;
 	enabled_payments?: PaymentChannelName[];
 	expiry?: {
@@ -61,7 +64,18 @@ type SnapReqField = {
 							: Record<string, unknown>
 	>;
 };
-export type SnapReq = SnapReqBase & Partial<SnapReqField>;
+export type SnapReq = SnapReqBase &
+	Partial<
+		SnapReqField & {
+			/**
+			 * Redirect URL after transaction is successfully paid (can be overridden by JS callback).
+			 * Can also be set via Snap Preference menu in your dashboard.
+			 *
+			 * Ref: [#callbacks-object](https://docs.midtrans.com/reference/json-objects#callbacks-object)
+			 */
+			callbacks: Callback;
+		}
+	>;
 
 export interface SnapBank {
 	va_number: string;

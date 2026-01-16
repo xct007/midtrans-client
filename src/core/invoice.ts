@@ -1,6 +1,13 @@
 import MidtransClient from "../index";
-import type { BankTransferChannel, PaymentChannelName } from "../resource";
-import type { PaymentLinkCustomField } from "./payment-link";
+import type {
+	BankTransferChannel,
+	ExpiryUnit,
+	PaymentChannelName,
+} from "../resource";
+import type {
+	PaymentLinkCreateReq,
+	PaymentLinkCustomField,
+} from "./payment-link";
 
 /**
  * Representing Invoices API
@@ -160,11 +167,11 @@ export type InvoiceBaseReq = {
 	};
 };
 
-type Expiry = {
+export type Expiry = {
 	/**
 	 * Expiry unit for payment link.
 	 */
-	unit: "day" | "month" | "year" | null;
+	unit: ExpiryUnit;
 	/**
 	 * Expiry duration for payment link.
 	 */
@@ -202,7 +209,7 @@ export type InvoiceVirtualAccount = {
 	 * Ref: https://docs.midtrans.com/reference/json-objects-1#virtual-account
 	 */
 	name: // In case midtrans add more bank transfer channel BankTransferChannel will be updated
-	| Extract<
+		| Extract<
 				BankTransferChannel,
 				"bca_va" | "bni_va" | "bri_va" | "cimb_va" | "permata_va"
 		  >
@@ -225,7 +232,8 @@ export type InvoiceReq = InvoiceBaseReq &
 				payment_type: Extract<InvoicePaymentType, "virtual_account">;
 				virtual_accounts: InvoiceVirtualAccount[];
 		  }
-	);
+	) &
+	Pick<PaymentLinkCreateReq, "expiry" | "enabled_payments" | "callbacks">;
 
 export type InvoiceRsp = {
 	/**

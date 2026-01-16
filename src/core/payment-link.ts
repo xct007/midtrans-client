@@ -2,6 +2,7 @@ import MidtransClient from "../index";
 import type {
 	BankTransferBase,
 	Banks,
+	Callback,
 	CustomField,
 	ExpiryUnit,
 	PaymentChannelName,
@@ -165,11 +166,9 @@ export type PaymentLinkCreateReq = Omit<
 		preset_amount: number;
 	};
 	/**
-	 * Callback `finish` URL where user will be redirected after finishing a transaction.
+	 * Callback URL where user will be redirected after finishing a transaction.
 	 */
-	callbacks?: {
-		finish: string;
-	};
+	callbacks?: Partial<Callback>;
 };
 
 export type PaymentLinkCreateRsp = {
