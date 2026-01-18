@@ -47,7 +47,18 @@ export type TransactionStatus =
 
 export type FraudStatus = "accept" | "deny" | "challenge";
 
-export type ExpiryUnit = "second" | "minute" | "hour" | "day";
+export type ExpiryUnit =
+	| "second"
+	| "minute"
+	| "hour"
+	| "day"
+	| "minutes"
+	| "hours"
+	| "days"
+	| "weeks"
+	| "months"
+	| "years"
+	| null;
 
 export type Callback = {
 	/**
