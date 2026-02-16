@@ -32,7 +32,7 @@
 	"bugs": "https://github.com/xct007/midtrans-client/issues",
 	"homepage": "https://github.com/xct007/midtrans-client#readme",
 	"dependencies": {
-		"undici": "^7.18.2"
+		"undici": "^7.19.1"
 	},
 	"devDependencies": {
 		"@babel/preset-typescript": "^7.25.9",
